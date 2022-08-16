@@ -1,0 +1,78 @@
+---
+title: ALZ Monitoring
+last_reviewed_on: 2022-08-15
+review_in: 6 months
+weight: 15
+---
+
+# ALZ Monitoring
+
+Resources that are built in Azure Landing Zone can send metrics to a Prometheus instance running in [agent mode](https://prometheus.io/blog/2021/11/16/agent/)
+that forwards the monitoring data to the [Infrastructure Monitoring and Alerting Platform (IMAP)](https://monitoring-alerting.staff.service.justice.gov.uk/login).
+This allows data from monitored resources to be easily visualised in Grafana later.
+Provisioning of a Prometheus agent for your Spoke can be requested from the ALZ team.
+
+By default, we scrape metrics directly from Azure Monitor using [Azure Metrics Exporter](https://github.com/webdevops/azure-metrics-exporter) and currently support the monitoring of:
+
+* __Automation Accounts__
+    * Total Jobs
+* __Load Balancers__
+    * Byte Count
+    * Dip Availability
+    * Vip Availability
+    * Snat Connection Count
+    * SYN Count
+* __Virtual Machines__
+    * Status
+    * Available Memory Bytes
+    * Inbound Flows
+    * Outbound Flows
+    * Network In Total
+    * Network Out Total
+    * OS Disk Queue Depth
+    * OS Disk Read Bytes/Sec
+    * OS Disk Write Bytes/Sec
+    * Percentage CPU
+* __VNET Gateways__
+    * AverageBandwidth
+    * TunnelAverageBandwidth
+    * TunnelEgressBytes
+    * TunnelIngressBytes
+
+## Configuring monitoring on your resources
+
+#### Step 1
+
+In order to monitor a resource in Azure, a tag must be applied that identifies it to Prometheus. These tags differ by resource type and are shown in the table below.
+
+| Resource            | Tags to enable monitoring |
+|---------------------|----------------|
+| Virtual Machines    | "prometheusAzureVirtualMachines" : "tomonitor" |
+| Automation Accounts | "prometheusAzureAutomationAccounts" : "tomonitor" |
+| Load Balancers      | "prometheusAzureLoadbalancers" : "tomonitor" |
+| VNET Gateways       | "prometheusAzureVirtualNetworkGateways" : "tomonitor"|
+
+Example of adding a tag to a Virtual Machine called `vmxwcca01` in Azure using the cli:
+
+```
+az vm update \
+    --resource-group rg-xwc-app-001 \
+    --name vmxwcca01 \
+    --set tags.prometheusAzureVirtualMachines=tomonitor
+```
+
+At this point, metrics for your resource are being collected by Prometheus and sent to [IMAP](https://monitoring-alerting.staff.service.justice.gov.uk/login).
+
+#### Step 2
+
+Now you are ready to onboard your service into IMAP. Grafana dashboards in IMAP are configured and managed in code and instructions on how
+to request access and setup your monitoring dashboards and alerts can be found [here](https://github.com/ministryofjustice/staff-infrastructure-monitoring-config) .
+
+## Support for additional metrics and exporters
+
+If your monitoring use case isn't covered by our current resource/metric offering then please let us know. We're happy to receive requests
+to expose extra resources and metrics available in Azure Monitor or add additional Prometheus exporters.
+
+Additional exporters we currently offer:
+
+* [Windows exporter](https://github.com/prometheus-community/windows_exporter)
