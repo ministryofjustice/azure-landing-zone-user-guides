@@ -7,21 +7,21 @@ weight: 15
 
 # ALZ Monitoring
 
-Resources that are built in Azure Landing Zone can send metrics to a Prometheus instance running in [agent mode](https://prometheus.io/blog/2021/11/16/agent/) 
-that forwards the monitoring data to the [Infrastructure Monitoring and Alerting Platform (IMAP)](https://monitoring-alerting.staff.service.justice.gov.uk/login). 
-This allows data from monitored resources to be easily visualised in Grafana later. 
-Provisioning of a Prometheus agent for your Spoke can be requested from the ALZ team. 
+Resources that are built in Azure Landing Zone can send metrics to a Prometheus instance running in [agent mode](https://prometheus.io/blog/2021/11/16/agent/)
+that forwards the monitoring data to the [Infrastructure Monitoring and Alerting Platform (IMAP)](https://monitoring-alerting.staff.service.justice.gov.uk/login).
+This allows data from monitored resources to be easily visualised in Grafana later.
+Provisioning of a Prometheus agent for your Spoke can be requested from the ALZ team.
 
 By default, we scrape metrics directly from Azure Monitor using [Azure Metrics Exporter](https://github.com/webdevops/azure-metrics-exporter) and currently support the monitoring of:
 
 * __Automation Accounts__
-    * Total Jobs  
+    * Total Jobs
 * __Load Balancers__
     * Byte Count
     * Dip Availability
     * Vip Availability
     * Snat Connection Count
-    * SYN Count  
+    * SYN Count
 * __Virtual Machines__
     * Status
     * Available Memory Bytes
@@ -32,7 +32,7 @@ By default, we scrape metrics directly from Azure Monitor using [Azure Metrics E
     * OS Disk Queue Depth
     * OS Disk Read Bytes/Sec
     * OS Disk Write Bytes/Sec
-    * Percentage CPU  
+    * Percentage CPU
 * __VNET Gateways__
     * AverageBandwidth
     * TunnelAverageBandwidth
@@ -67,7 +67,6 @@ At this point, metrics for your resource are being collected by Prometheus and s
 
 Now you are ready to onboard your service into IMAP. Grafana dashboards in IMAP are configured and managed in code and instructions on how
 to request access and setup your monitoring dashboards and alerts can be found [here](https://github.com/ministryofjustice/staff-infrastructure-monitoring-config) .
-
 
 ## Support for additional metrics and exporters
 
