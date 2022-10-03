@@ -30,7 +30,7 @@ The module and standard documentation can be found [here](https://github.com/min
 
 ### Pre-reqs
 
-Supported Terraform and Provider versions are maintained in the source repository [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm). Check the individual module readmes.
+Supported Terraform and Provider versions are maintained in the source repository [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) in the individual module readmes.
 
 
 ### Usage
@@ -234,7 +234,7 @@ vm_specifications_linux = {
 
 #### Full usage example
 
-Full code snippet specifying the configuration of a Windows VM in a local which is passed to the module. We then use one of the module outputs to register this VM in a Load Balancer.
+Full code snippet specifying the configuration of a Windows VM in a local which is passed to the module. Also shown is how to use an output from the module in a separate resource, in this case registering one of the NICs from a VM that the module created into a Load Balancer pool.
 
 ```
 locals {
@@ -312,5 +312,3 @@ locals {
   - `Silver2` - NLE/Preprod - Patch wave 2
   - `Gold1` - Prod - Patch wave 1
   - `Gold2` - Prod - Patch wave 2
-
-  In future iterations of the module, this configuration will be captured in a more straightforward way.
