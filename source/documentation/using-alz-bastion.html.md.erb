@@ -70,7 +70,7 @@ Pre-requisites:
 
 ### Authentication with a traditional AD Account
 
-Login using a local account created on the Virtual machine in question using the portal or CLI. Use the format <DOMAIN>\<USERNAME> for the username when logging in.
+Login using a local account created on the Virtual machine in question using the portal or CLI. Use the format {DOMAIN}\\{USERNAME} for the username when logging in.
 
 Pre-requisites:
 
@@ -79,3 +79,11 @@ Pre-requisites:
     - Reader role on the NIC with private IP of the virtual machine.
     - Reader role on the Azure Bastion resource.
 - The VM is joined to a domain
+
+
+## Notes and known issues
+
+- File transfer is only supported using the Native RDP or SSH client, not through the Azure Portal directly.
+
+- We've found this Windows GPO to cause issues with the file transfer if set to "enabled": 
+    - `Computer Configuration \ Administrative Templates \ Windows Components \ Remote Desktop Services \ Remote Desktop Session Hosts \ Device and Resource Redirection \ Do not allow clipboard redirection`

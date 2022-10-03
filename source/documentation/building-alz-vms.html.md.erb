@@ -89,7 +89,7 @@ The majority of the VM configuration options are defined using the `vm_specifica
 
 #### Single Windows VM
 
-A single Windows VM with a single NIC and two data disks. ADE is enabled and some custom tags have been applied.
+A single Windows VM with a single NIC and two data disks. ADE is enabled, an Antivirus extension is installed and some custom tags have been applied.
 
 ```
   vm_specifications = {
@@ -106,6 +106,7 @@ A single Windows VM with a single NIC and two data disks. ADE is enabled and som
       monitor            = false
       backup             = false
       enable_ade         = true
+      enable_av          = true 
 
       network = {
         nic-mgmt = {
