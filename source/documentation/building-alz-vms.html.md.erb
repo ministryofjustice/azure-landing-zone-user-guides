@@ -30,7 +30,7 @@ The module and standard documentation can be found [here](https://github.com/min
 
 ### Pre-reqs
 
-Supported Provider and Terraform versions are maintained in the source repository [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm).
+Supported Terraform and Provider versions are maintained in the source repository [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm). Check the individual module readmes.
 
 
 ### Usage
@@ -70,7 +70,7 @@ module "linux_vm_tests" {
 
 ### Variables
 
-Further variable detail can be found in the source repository readmes. 
+Further details can be found in the source repository readmes. 
 
 
 | Variable            | Explanation |
@@ -80,6 +80,8 @@ Further variable detail can be found in the source repository readmes.
 | `keyvault_name` `keyvault_rg`                                               | Generated user account credentials are pushed here|
 | `recovery_vault_name`                                                       | Optional. However, you must specify these if backup is enabled in the `vm_specifications` variable|
 | `vm_specifications`                                                         | Configuration parameters for one or more VM's, see below for usage examples|
+
+All ALZ Spokes are built with a Keyvault, Storage Account for Boot diagnostics and a Recovery Services Vault as standard, generally these would be the resources used when populating the variables.
 
 ### Examples
 
@@ -295,3 +297,19 @@ locals {
     backend_address_pool_id = data.azurerm_lb_backend_address_pool.windows_app.id
   }
 ```
+
+### Notes
+
+- User credentials are generated and stored as a secret in the Keyvault provided to the module. Note that whichever account used by Terraform will need permissions to create secrets in this Keyvault. Secrets are named according to the VM to which they belong in the format "{VMNAME}-password".
+
+- Only certain generations of VM are compatible with the usage of ADE (Windows) - see [here] (https://learn.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption-overview) if setting `enable_ade = true`
+
+- The `patch_class` attribute within the `vm_specification` variable will be different depending on the environment. Possible values and explanation:
+  - `Bronze1` - Dev -  Patch wave 1
+  - `Bronze2` - Dev - Patch wave 2
+  - `Silver1` - NLE/Preprod - Patch wave 1
+  - `Silver2` - NLE/Preprod - Patch wave 2
+  - `Gold1` - Prod - Patch wave 1
+  - `Gold2` - Prod - Patch wave 2
+
+  In future iterations of the module, this configuration will be captured in a more straightforward way.
