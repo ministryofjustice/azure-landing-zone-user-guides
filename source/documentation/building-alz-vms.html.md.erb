@@ -35,13 +35,13 @@ Supported Terraform and Provider versions are maintained in the source repositor
 
 ### Usage
 
-The module can be called in your code [directly from Github](https://www.terraform.io/language/modules/sources#github).
+The module can be called in your code [directly from Github](https://www.terraform.io/language/modules/sources#github). It is recommended to pin the module to a specific version to avoid breaking changes in your code as the module is developed. In the example below we're using v1.0. Releases can be tracked [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/releases).
 
 **Linux**
 
 ```
 module "linux_vm_tests" {
-    source                                   = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/alz-linux-vm?ref=v1.0"
+    source                                   = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v1.0/alz-linux-vm"
     resource_group                           = "rg-alz-vm-test-001"
     vm_specifications                        = local.vm_specifications_linux
     storage_account_boot_diag_name           = "stalzvmtest7272"
@@ -56,7 +56,7 @@ module "linux_vm_tests" {
 
 ```  
   module "windows_vm_tests" {
-    source                                   = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/alz-win-vm?ref=v1.0"
+    source                                   = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v1.0/alz-win-vm"
     resource_group                           = "rg-alz-vm-test-001"
     vm_specifications                        = local.vm_specifications_win
     storage_account_boot_diag_name           = "stalzvmtest7272"
@@ -312,3 +312,5 @@ locals {
   - `Silver2` - NLE/Preprod - Patch wave 2
   - `Gold1` - Prod - Patch wave 1
   - `Gold2` - Prod - Patch wave 2
+
+- Terraform destroy will be unable to remove all of the resources this module creates if `backup = true` is set and a recovery services vault name/group is provided. This is due to the resource lock on all ALZ Recovery Service Vaults to prevent accidental deletion. Removing the backups must be performed manually and outside of Terraform after the destroy has failed. 
