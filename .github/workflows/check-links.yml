@@ -3,8 +3,7 @@ name: Check for broken links
 on:
   workflow_dispatch:
   pull_request:
-    paths:
-      - "source/**"
+    types: [opened, edited, reopened, synchronize]
 
 jobs:
   check_links:

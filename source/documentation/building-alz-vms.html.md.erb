@@ -1,0 +1,314 @@
+---
+title: Building VMs in ALZ
+last_reviewed_on: 2022-10-03
+review_in: 6 months
+weight: 25
+---
+
+# Building VMs in ALZ
+
+Virtual Machines in Azure Landing Zone can be built and deployed either using code or manually via the Azure Portal. Teams running workloads in ALZ are free to use whichever tooling suits them best. 
+
+The ALZ team do provide and maintain a Terraform module that can make deployment of Windows and Linux VM's easier. It aims to provide a number of configuration options and simplifies integration of VM's into standard ALZ Spoke resources. 
+
+The module and standard documentation can be found [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm)
+
+**Features:**
+
+- Define the settings for multiple Virtual Machines in a single variable
+- Configure multiple NICs per VM
+- Configure multiple data disks per VM
+- Automatic credential creation and push into Spoke Keyvault
+- Optional enrollment into scheduled power off/on for cost saving
+- Optional installation of Antivirus with a VM extension
+- Optionally enable ALZ Prometheus based monitoring
+- Optional enrollment into Spoke Recovery Services Vault for backups
+- Optional enrollment into ALZ automated patching (Windows)
+- Optional additional [ADE](https://learn.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption-overview) disk encryption (Windows)
+
+## Using the ALZ VM Terraform module
+
+### Pre-reqs
+
+Supported Terraform and Provider versions are maintained in the source repository [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) in the individual module readmes.
+
+
+### Usage
+
+The module can be called in your code [directly from Github](https://www.terraform.io/language/modules/sources#github).
+
+**Linux**
+
+```
+module "linux_vm_tests" {
+    source                                   = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/alz-linux-vm?ref=v1.0"
+    resource_group                           = "rg-alz-vm-test-001"
+    vm_specifications                        = local.vm_specifications_linux
+    storage_account_boot_diag_name           = "stalzvmtest7272"
+    storage_account_boot_diag_resource_group = "rg-alz-vm-test-001"
+    keyvault_name                            = "kv-alz-vm-test-001"
+    keyvault_rg                              = "rg-alz-vm-test-001"
+    recovery_vault_name                      = "rsv-alz-test-001"
+    recovery_vault_resource_group            = "rg-alz-vm-test-001"
+  }
+```
+**Windows**
+
+```  
+  module "windows_vm_tests" {
+    source                                   = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/alz-win-vm?ref=v1.0"
+    resource_group                           = "rg-alz-vm-test-001"
+    vm_specifications                        = local.vm_specifications_win
+    storage_account_boot_diag_name           = "stalzvmtest7272"
+    storage_account_boot_diag_resource_group = "rg-alz-vm-test-001"
+    keyvault_name                            = "kv-alz-vm-test-001"
+    keyvault_rg                              = "rg-alz-vm-test-001"
+    recovery_vault_name                      = "rsv-alz-test-001"
+    recovery_vault_resource_group            = "rg-alz-vm-test-001"
+  }
+```
+
+### Variables
+
+Further details can be found in the source repository readmes. 
+
+
+| Variable            | Explanation |
+|---------------------|-------------|
+| `resource_group`                                                            | Where the VM's will be deployed|
+| `storage_account_boot_diag_name` `storage_account_boot_diag_resource_group` | Details of Storage account into which boot diagnostic logs will be streamed|
+| `keyvault_name` `keyvault_rg`                                               | Generated user account credentials are pushed here|
+| `recovery_vault_name`                                                       | Optional. However, you must specify these if backup is enabled in the `vm_specifications` variable|
+| `vm_specifications`                                                         | Configuration parameters for one or more VM's, see below for usage examples|
+
+All ALZ Spokes are built with a Keyvault, Storage Account for Boot diagnostics and a Recovery Services Vault as standard, generally these would be the resources used when populating the variables.
+
+### Examples
+
+The majority of the VM configuration options are defined using the `vm_specifications` object. Multiple VM's can be defined inside a single instance of this object. Some attributes are optional and will generate default values if ommitted. There are slight differences between the options available in the Linux and Windows versions of the module. Again, check the readme in the source repository and use the examples below as guides.
+
+#### Single Windows VM
+
+A single Windows VM with a single NIC and two data disks. ADE is enabled, an Antivirus extension is installed and some custom tags have been applied.
+
+```
+  vm_specifications = {
+    vm-test-win-001 = {                                
+      vm_size            = "Standard_D3_v2"
+      zone               = "1"
+      publisher          = "MicrosoftWindowsServer"
+      offer              = "WindowsServer"
+      sku                = "2016-Datacenter"
+      version            = "latest"
+      admin_user         = "azureuser"
+      patch_class        = "Bronze1"
+      scheduled_shutdown = false
+      monitor            = false
+      backup             = false
+      enable_ade         = true
+      enable_av          = true 
+
+      network = {
+        nic-mgmt = {
+          vnet                = "vnet-shared-ad-001"
+          vnet_resource_group = "rg-shared-core-001"
+          subnet              = "snet-shared-ad-001"
+          ip_address          = "10.193.131.13"
+        }
+      }
+
+      data_disks = {
+        data1 = {
+          size          = 20
+          type          = "Standard_LRS"
+          create_option = "Empty"
+        },
+        data2 = {
+          size          = 25
+          type          = "Standard_LRS"
+          create_option = "Empty"
+        }
+      }
+
+      tags = {
+        application = "windows_app"
+        owner       = "alz"
+      }
+    }
+  }
+
+```
+
+
+#### Multiple Linux VMs
+
+Two Linux VMs specified with multiple NICs on different VNets
+
+```
+vm_specifications_linux = {
+    vm-test-nix-01 = {
+      vm_size            = "Standard_D3_v2"
+      zone               = "1"
+      publisher          = "Canonical"
+      offer              = "UbuntuServer"
+      sku                = "16.04-LTS"
+      version            = "latest"
+      admin_user         = "azureuser"
+      scheduled_shutdown = false
+      monitor            = false
+      backup             = false
+
+      network = {
+        nic-mgmt = {
+          vnet                = "vnet-alz-vm-mgmt-001"
+          vnet_resource_group = "rg-alz-vm-mgmt-001"
+          subnet              = "snet-alz-vm-mgmt-001"
+          ip_address          = "192.168.99.6"
+        }
+        nic-red = {
+          vnet                = "vnet-alz-vm-red-001"
+          vnet_resource_group = "rg-alz-vm-red-001"
+          subnet              = "snet-alz-vm-red-001"
+          ip_address          = "10.1.1.10"
+        }
+      }
+
+      data_disks = {
+        data_files = {
+          size          = 20
+          type          = "Standard_LRS"
+          create_option = "Empty"
+        },
+      }
+
+      tags = {
+        application = "linux_app"
+        owner       = "alz"
+      }
+    }
+
+    vm-test-nix-02 = {
+        vm_size            = "Standard_D3_v2"
+        zone               = "1"
+        publisher          = "Canonical"
+        offer              = "UbuntuServer"
+        sku                = "16.04-LTS"
+        version            = "latest"
+        admin_user         = "azureuser"
+        scheduled_shutdown = false
+        monitor            = false
+        backup             = false
+  
+        network = {
+          nic-mgmt = {
+            vnet                = "vnet-alz-vm-mgmt-001"
+            vnet_resource_group = "rg-alz-vm-mgmt-001"
+            subnet              = "snet-alz-vm-mgmt-001"
+            ip_address          = "192.168.99.7"
+          }
+          nic-red = {
+            vnet                = "vnet-alz-vm-red-001"
+            vnet_resource_group = "rg-alz-vm-red-001"
+            subnet              = "snet-alz-vm-red-001"
+            ip_address          = "10.1.1.11"
+          }
+        }
+  
+        data_disks = {
+          data_files = {
+            size          = 20
+            type          = "Standard_LRS"
+            create_option = "Empty"
+          },
+        }
+  
+        tags = {
+          application = "linux_app"
+          owner       = "alz"
+        }
+      }
+  }
+
+```
+
+
+#### Full usage example
+
+Full code snippet specifying the configuration of a Windows VM in a local which is passed to the module. Also shown is how to use an output from the module in a separate resource, in this case registering one of the NICs from a VM that the module created into a Load Balancer pool.
+
+```
+locals {
+  vm_specifications_win = {
+    vm-test-win-01 = {
+      vm_size            = "Standard_D3_v2"
+      zone               = "1"
+      publisher          = "MicrosoftWindowsServer"
+      offer              = "WindowsServer"
+      sku                = "2016-Datacenter"
+      version            = "latest"
+      admin_user         = "azureuser"
+      patch_class        = "Bronze1"
+      scheduled_shutdown = true
+      monitor            = true
+      backup             = false
+      enable_ade         = true
+
+      network = {
+        nic-mgmt = {
+          vnet                = "vnet-alz-vm-test-001"
+          vnet_resource_group = "rg-alz-vm-test-001"
+          subnet              = "snet-alz-vm-test-001"
+          ip_address          = "192.168.99.5"
+        }
+      }
+
+      data_disks = {
+        data1 = {
+          size          = 20
+          type          = "Standard_LRS"
+          create_option = "Empty"
+        },
+      }
+
+      tags = {
+        application = "windows_app"
+        owner       = "alz"
+      }
+    }
+  }
+
+
+  module "windows_vm_tests" {
+    source                                   = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/alz-win-vm?ref=v1.0"
+    resource_group                           = "rg-alz-vm-test-001"
+    vm_specifications                        = local.vm_specifications_win
+    storage_account_boot_diag_name           = "stalzvmtest7272"
+    storage_account_boot_diag_resource_group = "rg-alz-vm-test-001"
+    keyvault_name                            = "kv-alz-vm-test-001"
+    keyvault_rg                              = "rg-alz-vm-test-001"
+  }
+
+  output "nic_ids" {
+    value = module.linux_vm.nics
+  }
+
+  resource "azurerm_network_interface_backend_address_pool_association" "windows_app" {
+    network_interface_id    = output.nic_ids["vm-test-win-01"]
+    ip_configuration_name   = "ipconfig-vm-test-win-01
+    backend_address_pool_id = data.azurerm_lb_backend_address_pool.windows_app.id
+  }
+```
+
+### Notes
+
+- User credentials are generated and stored as a secret in the Keyvault provided to the module. Note that whichever account used by Terraform will need permissions to create secrets in this Keyvault. Secrets are named according to the VM to which they belong in the format "{VMNAME}-password".
+
+- Only certain generations of VM are compatible with the usage of ADE (Windows) - see [here] (https://learn.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption-overview) if setting `enable_ade = true`
+
+- The `patch_class` attribute within the `vm_specification` variable will be different depending on the environment. Possible values and explanation:
+  - `Bronze1` - Dev -  Patch wave 1
+  - `Bronze2` - Dev - Patch wave 2
+  - `Silver1` - NLE/Preprod - Patch wave 1
+  - `Silver2` - NLE/Preprod - Patch wave 2
+  - `Gold1` - Prod - Patch wave 1
+  - `Gold2` - Prod - Patch wave 2
