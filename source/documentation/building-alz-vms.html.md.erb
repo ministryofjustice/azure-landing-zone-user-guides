@@ -1,6 +1,6 @@
 ---
 title: Building VMs in ALZ
-last_reviewed_on: 2022-10-03
+last_reviewed_on: 2022-12-01
 review_in: 6 months
 weight: 50
 ---
@@ -21,10 +21,10 @@ The module and standard documentation can be found [here](https://github.com/min
 - Automatic credential creation and push into Spoke Keyvault
 - Optional enrollment into scheduled power off/on for cost saving
 - Optional installation of Antivirus with a VM extension
-- Optionally enable ALZ Prometheus based monitoring
+- Optionally enable Azure monitor agent for the VM
 - Optional enrollment into Spoke Recovery Services Vault for backups
 - Optional enrollment into ALZ automated patching (Windows)
-- Optional additional [ADE](https://learn.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption-overview) disk encryption (Windows)
+- Optionally enable host based encryption - see pre-requisites and considerations before enabling [here](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-enable-host-based-encryption-portal?tabs=azure-powershell)
 
 ## Using the ALZ VM Terraform module
 
@@ -41,30 +41,35 @@ The module can be called in your code [directly from Github](https://www.terrafo
 
 ```
 module "linux_vm_tests" {
-    source                                   = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v1.0/alz-linux-vm"
-    resource_group                           = "rg-alz-vm-test-001"
-    vm_specifications                        = local.vm_specifications_linux
-    storage_account_boot_diag_name           = "stalzvmtest7272"
-    storage_account_boot_diag_resource_group = "rg-alz-vm-test-001"
-    keyvault_name                            = "kv-alz-vm-test-001"
-    keyvault_rg                              = "rg-alz-vm-test-001"
-    recovery_vault_name                      = "rsv-alz-test-001"
-    recovery_vault_resource_group            = "rg-alz-vm-test-001"
+    source                                      = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v1.1/alz-linux-vm"
+    resource_group                              = "rg-alz-vm-test-001"
+    vm_specifications                           = local.vm_specifications_linux
+    storage_account_boot_diag_name              = "stalzvmtest7272"
+    storage_account_boot_diag_resource_group    = "rg-alz-vm-test-001"
+    keyvault_name                               = "kv-alz-vm-test-001"
+    keyvault_rg                                 = "rg-alz-vm-test-001"
+    recovery_vault_name                         = "rsv-alz-test-001"
+    recovery_vault_resource_group               = "rg-alz-vm-test-001"
+    data_collection_rule_monitor_name           = "dcr-alz-vm-test-ama-001"
+    data_collection_rule_monitor_resource_group = "rg-azmon-test-001"
   }
 ```
 **Windows**
 
 ```  
   module "windows_vm_tests" {
-    source                                   = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v1.0/alz-win-vm"
-    resource_group                           = "rg-alz-vm-test-001"
-    vm_specifications                        = local.vm_specifications_win
-    storage_account_boot_diag_name           = "stalzvmtest7272"
-    storage_account_boot_diag_resource_group = "rg-alz-vm-test-001"
-    keyvault_name                            = "kv-alz-vm-test-001"
-    keyvault_rg                              = "rg-alz-vm-test-001"
-    recovery_vault_name                      = "rsv-alz-test-001"
-    recovery_vault_resource_group            = "rg-alz-vm-test-001"
+    source                                       = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v1.1/alz-win-vm"
+    resource_group                               = "rg-alz-vm-test-001"
+    vm_specifications                            = local.vm_specifications_win
+    storage_account_boot_diag_name               = "stalzvmtest7272"
+    storage_account_boot_diag_resource_group     = "rg-alz-vm-test-001"
+    keyvault_name                                = "kv-alz-vm-test-001"
+    keyvault_rg                                  = "rg-alz-vm-test-001"
+    recovery_vault_name                          = "rsv-alz-test-001"
+    recovery_vault_resource_group                = "rg-alz-vm-test-001"
+    data_collection_rule_monitor_name            = "dcr-alz-vm-test-ama-001"
+    data_collection_rule_monitor_resource_group  = "rg-alz-vm-test-001"
+    
   }
 ```
 
@@ -75,13 +80,14 @@ Further details can be found in the source repository readmes.
 
 | Variable            | Explanation |
 |---------------------|-------------|
-| `resource_group`                                                            | Where the VM's will be deployed|
-| `storage_account_boot_diag_name` `storage_account_boot_diag_resource_group` | Details of Storage account into which boot diagnostic logs will be streamed|
-| `keyvault_name` `keyvault_rg`                                               | Generated user account credentials are pushed here|
-| `recovery_vault_name`                                                       | Optional. However, you must specify these if backup is enabled in the `vm_specifications` variable|
-| `vm_specifications`                                                         | Configuration parameters for one or more VM's, see below for usage examples|
+| `resource_group`                                                                  | Where the VM's will be deployed|
+| `storage_account_boot_diag_name` `storage_account_boot_diag_resource_group`       | Details of Storage account into which boot diagnostic logs will be streamed|
+| `keyvault_name` `keyvault_rg`                                                     | Generated user account credentials are pushed here|
+| `recovery_vault_name`, `recovery_vault_resource_group`                            | Optional. However, you must specify these if backup is enabled in the `vm_specifications` variable|
+| `data_collection_rule_monitor_name`,`data_collection_rule_monitor_resource_group` | Optional. However, you must specify these if monitor is enabled in the `vm_specifications` variable|
+| `vm_specifications`                                                               | Configuration parameters for one or more VM's, see below for usage examples|
 
-All ALZ Spokes are built with a Keyvault, Storage Account for Boot diagnostics and a Recovery Services Vault as standard, generally these would be the resources used when populating the variables.
+All ALZ Spokes are built with a Keyvault, Storage Account for Boot diagnostics, Recovery Services Vault for backups and a Data Collection Rule for use with Azure Monitor as standard, generally these would be the resources used when populating the variables.
 
 ### Examples
 
@@ -89,7 +95,7 @@ The majority of the VM configuration options are defined using the `vm_specifica
 
 #### Single Windows VM
 
-A single Windows VM with a single NIC and two data disks. ADE is enabled, an Antivirus extension is installed and some custom tags have been applied.
+A single Windows VM with a single NIC and two data disks. An Antivirus extension is installed and some custom tags have been applied.
 
 ```
   vm_specifications = {
@@ -105,7 +111,6 @@ A single Windows VM with a single NIC and two data disks. ADE is enabled, an Ant
       scheduled_shutdown = false
       monitor            = false
       backup             = false
-      enable_ade         = true
       enable_av          = true 
 
       network = {
@@ -251,7 +256,6 @@ locals {
       scheduled_shutdown = true
       monitor            = true
       backup             = false
-      enable_ade         = true
 
       network = {
         nic-mgmt = {
@@ -279,13 +283,15 @@ locals {
 
 
   module "windows_vm_tests" {
-    source                                   = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/alz-win-vm?ref=v1.0"
-    resource_group                           = "rg-alz-vm-test-001"
-    vm_specifications                        = local.vm_specifications_win
-    storage_account_boot_diag_name           = "stalzvmtest7272"
-    storage_account_boot_diag_resource_group = "rg-alz-vm-test-001"
-    keyvault_name                            = "kv-alz-vm-test-001"
-    keyvault_rg                              = "rg-alz-vm-test-001"
+    source                                      = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/alz-win-vm?ref=v1.0"
+    resource_group                              = "rg-alz-vm-test-001"
+    vm_specifications                           = local.vm_specifications_win
+    storage_account_boot_diag_name              = "stalzvmtest7272"
+    storage_account_boot_diag_resource_group    = "rg-alz-vm-test-001"
+    keyvault_name                               = "kv-alz-vm-test-001"
+    keyvault_rg                                 = "rg-alz-vm-test-001"
+    data_collection_rule_monitor_name           = "dcr-alz-vm-test-ama-001"
+    data_collection_rule_monitor_resource_group = "rg-alz-vm-test-001"
   }
 
   output "nic_ids" {
@@ -303,7 +309,7 @@ locals {
 
 - User credentials are generated and stored as a secret in the Keyvault provided to the module. Note that whichever account used by Terraform will need permissions to create secrets in this Keyvault. Secrets are named according to the VM to which they belong in the format "{VMNAME}-password".
 
-- Only certain generations of VM are compatible with the usage of ADE (Windows) - see [here] (https://learn.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption-overview) if setting `enable_ade = true`
+- Enabling monitoring on a Virtual Machine installs the Azure Monitor Agent on the VM via an extension and connects it to the Log Analytics workspace in your Spoke. See ALZ Monitoring documentation for further info.
 
 - The `patch_class` attribute within the `vm_specification` variable will be different depending on the environment. Possible values and explanation:
   - `Bronze1` - Dev -  Patch wave 1
