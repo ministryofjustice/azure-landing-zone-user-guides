@@ -1,0 +1,207 @@
+---
+title: Our Offer
+last_reviewed_on: 2022-08-15
+review_in: 3 months
+weight: 20
+---
+
+# Spokes and Support
+
+## What does the Azure Landing Zone team provide as part of your spoke? 
+
+All spokes are set up as fully compliant to Azure Policy. When we hand your spoke over as ready to use, this will include: 
+
+### All spokes
+
+- Networking to the hub, shared services and other requested destinations (which can include within Azure , outside of Azure ( i.e. internet ) or towards AWS , DXC and other connected MOJ environments)  
+- Patching infrastructure (operating system level, only) which you opt into by tagging your resources appropriately 
+- Key vault 
+- Recovery services vault 
+- Two storage accounts for logging 
+
+### Optional
+
+Additional elements of your spoke which we can provide include:  
+   
+- [Support setting up bastion access to your infrastructure](/documentation/using-alz-bastion.html)
+- [Monitoring set up support] (/documentation/using-alz-monitoring.html)
+
+### On our roadmap
+
+Things that are on our roadmap to provide in the future are: 
+
+- An example GitHub repo where the code for your spoke is stored 
+- An example Azure DevOps project which will manage deployment pipelines for your spoke and resources 
+- <del>Terraform Virtual Machine (VM) Creation module to use when spinning up new resource</del> [Available October 2022](/documentation/building-alz-vms.html)
+
+
+### What do the Azure Landing Zone team support in your spoke? 
+
+We will provide support for any elements provided as part of spoke handover and for any of our standard services that you have opted into using after handover. Examples of issues and requests we would help with are: 
+ 
+- A VM application (app) or database (DB) fails to connect with another endpoint which has been configured 
+- Our patching service is not using the patch arrangement we have setup e.g.  automation accounts and update management 
+- You are unable to provision resources because of a policy violation e.g. name is not as per naming policy, trying to use a public IP address 
+- Approved policy exemption implementation 
+- You need to add a new route or peer from ALZ to somewhere 
+- VMs that refuse to behave despite 3LS best efforts 
+- You are unable to connect to your resources using our Bastion service 
+- You no longer see monitoring traffic when using our solution in Prometheus 
+
+**We do not support with any application level issues.** Please follow the established channels for reporting and resolving these (generally via ServiceNow). 
+
+### Using ALZ Bastion
+
+The ALZ Bastion Host allows access to any Virtual Machine or Virtual Machine Scale Set in the Azure Landing Zone from the comfort of your own device.
+
+There are two ways of accessing ALZ Bastion:
+
+- Portal
+- Native Client
+
+
+#### Portal
+
+To connect to a Windows Virtual Machine via RDP, see this [Document](https://docs.microsoft.com/en-us/azure/bastion/bastion-connect-vm-rdp-windows#rdp)
+
+To connect to a Windows Virtual Machine via SSH using username/password authentication (not recommended), see this [Document](https://docs.microsoft.com/en-us/azure/bastion/bastion-connect-vm-ssh-windows#username)
+
+Connection to a Windows Virtual Machine via SSH using a private key can be done in various ways:
+
+- [Pasting private key](https://docs.microsoft.com/en-us/azure/bastion/bastion-connect-vm-ssh-windows#privatekey)
+- [Using private key from local file](https://docs.microsoft.com/en-us/azure/bastion/bastion-connect-vm-ssh-windows#ssh)
+- [Using private key from Key Vault](https://docs.microsoft.com/en-us/azure/bastion/bastion-connect-vm-ssh-windows#akv)
+
+Note, that while the documentation refers to windows virtual machines, ssh authentication would work exactly the same way for Linux virtual machines
+
+#### Native Client
+
+If you are connecting from a Windows machine to a windows virtual machine see
+[this document](https://docs.microsoft.com/en-us/azure/bastion/connect-native-client-windows#connect-windows).
+
+If you are connecting from a Windows machine to a Linux virtual machine see [this document](https://docs.microsoft.com/en-us/azure/bastion/connect-native-client-windows#connect-linux)
+
+If you are connecting from a *nix machine to a Windows/Linux virtual machine see [this document](https://docs.microsoft.com/en-us/azure/bastion/connect-native-client-windows#connect-tunnel)
+
+
+See this helper script maintained by the ALZ team to simplify managing connections to multiple machines via the Native RDP client [here](https://github.com/ministryofjustice/staff-infrastructure-azure-landing-zone-scripts/tree/main/connect-bastion)
+
+
+#### Connection scenarios
+
+##### Authentication with a local account
+
+Login using a local account created on the Virtual machine in question using the portal or CLI.
+
+Pre-requisites:
+
+- An Azure AD Account that has the following RBAC permissions:
+    - Reader role on the virtual machine.
+    - Reader role on the NIC with private IP of the virtual machine.
+    - Reader role on the Azure Bastion resource.
+
+
+#### Authentication with an Azure AD Account
+
+Login using your Azure AD account using the portal or CLI. **Please note this only currently works in Production.**
+
+Pre-requisites:
+
+- An Azure AD Account that has the following RBAC permissions:
+    - Either Virtual Machine Administrator Login or Virtual Machine User Login role on the virtual machine
+    - Reader role on the NIC with private IP of the virtual machine.
+    - Reader role on the Azure Bastion resource.
+
+
+#### Authentication with a traditional AD Account
+
+Login using a local account created on the Virtual machine in question using the portal or CLI. Use the format {DOMAIN}\\{USERNAME} for the username when logging in.
+
+Pre-requisites:
+
+- An Azure AD Account that has the following RBAC permissions:
+    - Reader role on the virtual machine.
+    - Reader role on the NIC with private IP of the virtual machine.
+    - Reader role on the Azure Bastion resource.
+- The VM is joined to a domain
+
+
+#### Notes and known issues
+
+- File transfer is only supported using the Native RDP or SSH client, not through the Azure Portal directly.
+
+- We've found this Windows GPO to cause issues with the file transfer if set to "enabled": 
+    - `Computer Configuration \ Administrative Templates \ Windows Components \ Remote Desktop Services \ Remote Desktop Session Hosts \ Device and Resource Redirection \ Do not allow clipboard redirection`
+
+### ALZ Monitoring
+
+Resources that are built in Azure Landing Zone can send metrics to a Prometheus instance running in [agent mode](https://prometheus.io/blog/2021/11/16/agent/)
+that forwards the monitoring data to the [Infrastructure Monitoring and Alerting Platform (IMAP)](https://monitoring-alerting.staff.service.justice.gov.uk/login).
+This allows data from monitored resources to be easily visualised in Grafana later.
+Provisioning of a Prometheus agent for your Spoke can be requested from the ALZ team.
+
+By default, we scrape metrics directly from Azure Monitor using [Azure Metrics Exporter](https://github.com/webdevops/azure-metrics-exporter) and currently support the monitoring of:
+
+* __Automation Accounts__
+    * Total Jobs
+* __Load Balancers__
+    * Byte Count
+    * Dip Availability
+    * Vip Availability
+    * Snat Connection Count
+    * SYN Count
+* __Virtual Machines__
+    * Status
+    * Available Memory Bytes
+    * Inbound Flows
+    * Outbound Flows
+    * Network In Total
+    * Network Out Total
+    * OS Disk Queue Depth
+    * OS Disk Read Bytes/Sec
+    * OS Disk Write Bytes/Sec
+    * Percentage CPU
+* __VNET Gateways__
+    * AverageBandwidth
+    * TunnelAverageBandwidth
+    * TunnelEgressBytes
+    * TunnelIngressBytes
+
+#### Configuring monitoring on your resources
+
+##### Step 1
+
+In order to monitor a resource in Azure, a tag must be applied that identifies it to Prometheus. These tags differ by resource type and are shown in the table below.
+
+| Resource            | Tags to enable monitoring |
+|---------------------|----------------|
+| Virtual Machines    | "prometheusAzureVirtualMachines" : "tomonitor" |
+| Automation Accounts | "prometheusAzureAutomationAccounts" : "tomonitor" |
+| Load Balancers      | "prometheusAzureLoadbalancers" : "tomonitor" |
+| VNET Gateways       | "prometheusAzureVirtualNetworkGateways" : "tomonitor"|
+
+Example of adding a tag to a Virtual Machine called `vmxwcca01` in Azure using the cli:
+
+```
+az vm update \
+    --resource-group rg-xwc-app-001 \
+    --name vmxwcca01 \
+    --set tags.prometheusAzureVirtualMachines=tomonitor
+```
+
+At this point, metrics for your resource are being collected by Prometheus and sent to [IMAP](https://monitoring-alerting.staff.service.justice.gov.uk/login).
+
+##### Step 2
+
+Now you are ready to onboard your service into IMAP. Grafana dashboards in IMAP are configured and managed in code and instructions on how
+to request access and setup your monitoring dashboards and alerts can be found [here](https://github.com/ministryofjustice/staff-infrastructure-monitoring-config) .
+If you can not access this repository, Please get in touch with [#ask-cloud-ops](https://mojdt.slack.com/archives/C026AFE617T) via Slack.
+
+#### Support for additional metrics and exporters
+
+If your monitoring use case isn't covered by our current resource/metric offering then please let us know. We're happy to receive requests
+to expose extra resources and metrics available in Azure Monitor or add additional Prometheus exporters.
+
+Additional exporters we currently offer:
+
+* [Windows exporter](https://github.com/prometheus-community/windows_exporter)
