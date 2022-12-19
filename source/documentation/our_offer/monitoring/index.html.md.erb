@@ -1,79 +1,73 @@
 ---
 title: ALZ Monitoring
-last_reviewed_on: 2022-08-15
+last_reviewed_on: 2022-12-19
 review_in: 6 months
 weight: 2200
 ---
 
 # ALZ Monitoring
 
-Resources that are built in Azure Landing Zone can send metrics to a Prometheus instance running in [agent mode](https://prometheus.io/blog/2021/11/16/agent/)
-that forwards the monitoring data to the [Infrastructure Monitoring and Alerting Platform (IMAP)](https://monitoring-alerting.staff.service.justice.gov.uk/login).
-This allows data from monitored resources to be easily visualised in Grafana later.
-Provisioning of a Prometheus agent for your Spoke can be requested from the ALZ team.
+Resources in ALZ are monitored using the in-built Azure Monitor. Azure Monitor is a collection of Azure services used to gather, parse and visualise log data and metrics from supported Azure resources.
 
-By default, we scrape metrics directly from Azure Monitor using [Azure Metrics Exporter](https://github.com/webdevops/azure-metrics-exporter) and currently support the monitoring of:
+As standard, the ALZ team deliver some Azure monitor components pre-configured as part of a Spoke or Workload, making it easier to get up and running with Azure Monitor.
 
-* __Automation Accounts__
-    * Total Jobs
-* __Load Balancers__
-    * Byte Count
-    * Dip Availability
-    * Vip Availability
-    * Snat Connection Count
-    * SYN Count
-* __Virtual Machines__
-    * Status
-    * Available Memory Bytes
-    * Inbound Flows
-    * Outbound Flows
-    * Network In Total
-    * Network Out Total
-    * OS Disk Queue Depth
-    * OS Disk Read Bytes/Sec
-    * OS Disk Write Bytes/Sec
-    * Percentage CPU
-* __VNET Gateways__
-    * AverageBandwidth
-    * TunnelAverageBandwidth
-    * TunnelEgressBytes
-    * TunnelIngressBytes
+## What does ALZ provide? 
 
-## Configuring monitoring on your resources
+As part of a standard Spoke or Workload, the ALZ team provide: 
 
-#### Step 1
+- Log Analytics Workspace
+- Data Collection Rule for use with [Azure Monitor Agent](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/agents-overview)
+- Keyvault log collection via Diagnostic Settings
+- 2 Workbooks pre-configured for visualising useful metrics on: 
+    - Virtual Machines
+    - Core Spoke/Workload resources
 
-In order to monitor a resource in Azure, a tag must be applied that identifies it to Prometheus. These tags differ by resource type and are shown in the table below.
 
-| Resource            | Tags to enable monitoring |
-|---------------------|----------------|
-| Virtual Machines    | "prometheusAzureVirtualMachines" : "tomonitor" |
-| Automation Accounts | "prometheusAzureAutomationAccounts" : "tomonitor" |
-| Load Balancers      | "prometheusAzureLoadbalancers" : "tomonitor" |
-| VNET Gateways       | "prometheusAzureVirtualNetworkGateways" : "tomonitor"|
+## Monitoring a Virtual Machine
 
-Example of adding a tag to a Virtual Machine called `vmxwcca01` in Azure using the cli:
+Here we'll walk through a common use-case where one or more Virtual Machines need to be monitored.
 
-```
-az vm update \
-    --resource-group rg-xwc-app-001 \
-    --name vmxwcca01 \
-    --set tags.prometheusAzureVirtualMachines=tomonitor
-```
 
-At this point, metrics for your resource are being collected by Prometheus and sent to [IMAP](https://monitoring-alerting.staff.service.justice.gov.uk/login).
+### Install the AMA (VM Built with ALZ VM Module)
 
-#### Step 2
+1.) When passing your VM configuration to the module, ensure that `monitor = true` is set on each VM that you wish to monitor. Setting this provisions the Azure Monitor Agent on the VM and associates it to the appropriate Data Collection Rule for your Spoke. 
 
-Now you are ready to onboard your service into IMAP. Grafana dashboards in IMAP are configured and managed in code and instructions on how
-to request access and setup your monitoring dashboards and alerts can be found [here](https://github.com/ministryofjustice/staff-infrastructure-monitoring-config) .
-If you can not access this repository, Please get in touch with [#ask-cloud-ops](https://mojdt.slack.com/archives/C026AFE617T) via Slack.
 
-## Support for additional metrics and exporters
+### Install the AMA (VM Built any other way)
 
-If your monitoring use case isn't covered by our current resource/metric offering then please let us know. We're happy to receive requests
-to expose extra resources and metrics available in Azure Monitor or add additional Prometheus exporters.
+1.) Install the Azure Monitor Agent on the VM(s) you wish to monitor. There are a variety of ways to accomplish this but in the absence of a more automated method it can simply be enabled and installed using the Azure Portal. See the Microsoft documentation on installation [here](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-manage?tabs=azure-portal#install)
 
-Additional exporters we currently offer:
+During the installation process, you will be asked to create a Data Collection Rule. At this point, rather then creating a new one, you should use the existing Data Collection Rule that already exists in your Spoke. It's deployed as standard to all Spokes and is called `MSVMI-azure-monitor-agent`. Associating your Azure Monitor Agent install to this Data Collection Rule ensures that the logs it generated will be sent to the correct Log Analytics Workspace.
 
-* [Windows exporter](https://github.com/prometheus-community/windows_exporter)
+### Visualise the logs in a Dashboard
+
+1.) Navigate to the [Azure Workbooks](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/microsoft.insights%2Fworkbooks) blade in the portal and locate the VM monitoring workbook for your Spoke. The naming convention is as follows: 
+
+`ALZ - VM Monitor <SPOKE_IDENTIFIER>`
+
+For example, in the EUCS Spoke, the Workbook is called:
+
+`ALZ - VM Monitor EUCS`
+
+This workbook is pre-loaded with queries and can be used as a template by creating a new copy of it. It's not recommended to use this Workbook directly without first making a copy as it is maintained by the ALZ team and is defined in code. Any changes made to this via the Portal would be overwritten regularly. 
+
+2.) Make a copy of this Workbook by opening it, selecting "Edit" and then selecting "Save As". Name it as you like and open this new copy of the Workbook. 
+
+3.) From here, you can select the VM's you wish to monitor and which timespan you wish to visualise using the dropdown selectors at the top of the Workbook. This copied Workbook can be expanded to include new queries or metrics as needed. Once you've populated the dropdown selections, click the "Save" icon. 
+
+## Monitoring something else
+
+Anything that can send logs to a Log Analytics Workspace can be monitored using Azure Monitor. This includes most Azure resources and services, which can usually be configured with a series of "Diagnostic Settings" that specify which Log Analytics Workspace to send logs to and what kinds of event to send. Once logs are being collected, they can be queried and visualised using a Workbook.
+
+## Alerting
+
+Alerts in Azure can be configured using thresholds on Metric values or query results, which makes them easy to use in conjunction with resources that are sending logs to a Log Analytics Workspace. Once configured, they are linked to an Action Group which then determines what action to take (Send an email or SMS, restart a server etc...)
+
+At current time, ALZ do not provide any alerts on a Spoke as standard due to the bespoke nature of defining an alert threshold. Often, useful alerting requires application or service specific knowledge to configure.
+
+
+## Coming soon
+
+- Integration with PowerBI for reporting
+- Integration with ServiceNow for automatic creation and assignment of tickets
+- Templated standard alerting that can be used as basis for more tailored alerts and actions
