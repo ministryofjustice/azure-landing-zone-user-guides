@@ -1,0 +1,79 @@
+---
+title: Using ALZ Bastion
+last_reviewed_on: 2023-01-05
+review_in: 3 months
+weight: 3200
+---
+
+# Portal
+
+To connect to a Windows Virtual Machine via RDP, see this [Document](https://docs.microsoft.com/en-us/azure/bastion/bastion-connect-vm-rdp-windows#rdp)
+
+To connect to a Windows Virtual Machine via SSH using username/password authentication (not recommended), see this [Document](https://docs.microsoft.com/en-us/azure/bastion/bastion-connect-vm-ssh-windows#username)
+
+Connection to a Windows Virtual Machine via SSH using a private key can be done in various ways:
+
+- [Pasting private key](https://docs.microsoft.com/en-us/azure/bastion/bastion-connect-vm-ssh-windows#privatekey)
+- [Using private key from local file](https://docs.microsoft.com/en-us/azure/bastion/bastion-connect-vm-ssh-windows#ssh)
+- [Using private key from Key Vault](https://docs.microsoft.com/en-us/azure/bastion/bastion-connect-vm-ssh-windows#akv)
+
+Note, that while the documentation refers to windows virtual machines, ssh authentication would work exactly the same way for Linux virtual machines
+
+# Native Client
+
+If you are connecting from a Windows machine to a windows virtual machine see
+[this document](https://docs.microsoft.com/en-us/azure/bastion/connect-native-client-windows#connect-windows).
+
+If you are connecting from a Windows machine to a Linux virtual machine see [this document](https://docs.microsoft.com/en-us/azure/bastion/connect-native-client-windows#connect-linux)
+
+If you are connecting from a *nix machine to a Windows/Linux virtual machine see [this document](https://docs.microsoft.com/en-us/azure/bastion/connect-native-client-windows#connect-tunnel)
+
+
+See this helper script maintained by the ALZ team to simplify managing connections to multiple machines via the Native RDP client [here](https://github.com/ministryofjustice/staff-infrastructure-azure-landing-zone-scripts/tree/main/connect-bastion)
+
+
+# Connection scenarios
+
+## Authentication with a local account
+
+Login using a local account created on the Virtual machine in question using the portal or CLI.
+
+Pre-requisites:
+
+- An Azure AD Account that has the following RBAC permissions:
+    - Reader role on the virtual machine.
+    - Reader role on the NIC with private IP of the virtual machine.
+    - Reader role on the Azure Bastion resource.
+
+
+## Authentication with an Azure AD Account
+
+Login using your Azure AD account using the portal or CLI. **Please note this only currently works in Production.**
+
+Pre-requisites:
+
+- An Azure AD Account that has the following RBAC permissions:
+    - Either Virtual Machine Administrator Login or Virtual Machine User Login role on the virtual machine
+    - Reader role on the NIC with private IP of the virtual machine.
+    - Reader role on the Azure Bastion resource.
+
+
+## Authentication with a traditional AD Account
+
+Login using a local account created on the Virtual machine in question using the portal or CLI. Use the format {DOMAIN}\\{USERNAME} for the username when logging in.
+
+Pre-requisites:
+
+- An Azure AD Account that has the following RBAC permissions:
+    - Reader role on the virtual machine.
+    - Reader role on the NIC with private IP of the virtual machine.
+    - Reader role on the Azure Bastion resource.
+- The VM is joined to a domain
+
+
+# Notes and known issues
+
+- File transfer is only supported using the Native RDP or SSH client, not through the Azure Portal directly.
+
+- We've found this Windows GPO to cause issues with the file transfer if set to "enabled": 
+    - `Computer Configuration \ Administrative Templates \ Windows Components \ Remote Desktop Services \ Remote Desktop Session Hosts \ Device and Resource Redirection \ Do not allow clipboard redirection`
