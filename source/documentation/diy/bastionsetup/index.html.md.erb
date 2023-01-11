@@ -1,11 +1,14 @@
 ---
-title: Using ALZ Bastion
+title: Bastion Setup
 last_reviewed_on: 2023-01-05
 review_in: 3 months
 weight: 3200
 ---
+#Connecting via Bastion
 
-# Portal
+There are 2 methods to connect to your resources via Bastion, the online portal or the native client.
+
+## Portal
 
 To connect to a Windows Virtual Machine via RDP, see this [Document](https://docs.microsoft.com/en-us/azure/bastion/bastion-connect-vm-rdp-windows#rdp)
 
@@ -19,7 +22,7 @@ Connection to a Windows Virtual Machine via SSH using a private key can be done 
 
 Note, that while the documentation refers to windows virtual machines, ssh authentication would work exactly the same way for Linux virtual machines
 
-# Native Client
+## Native Client
 
 If you are connecting from a Windows machine to a windows virtual machine see
 [this document](https://docs.microsoft.com/en-us/azure/bastion/connect-native-client-windows#connect-windows).
@@ -32,9 +35,9 @@ If you are connecting from a *nix machine to a Windows/Linux virtual machine see
 See this helper script maintained by the ALZ team to simplify managing connections to multiple machines via the Native RDP client [here](https://github.com/ministryofjustice/staff-infrastructure-azure-landing-zone-scripts/tree/main/connect-bastion)
 
 
-# Connection scenarios
+## Connection scenarios
 
-## Authentication with a local account
+### Authentication with a local account
 
 Login using a local account created on the Virtual machine in question using the portal or CLI.
 
@@ -46,7 +49,7 @@ Pre-requisites:
     - Reader role on the Azure Bastion resource.
 
 
-## Authentication with an Azure AD Account
+### Authentication with an Azure AD Account
 
 Login using your Azure AD account using the portal or CLI. **Please note this only currently works in Production.**
 
@@ -58,7 +61,7 @@ Pre-requisites:
     - Reader role on the Azure Bastion resource.
 
 
-## Authentication with a traditional AD Account
+### Authentication with a traditional AD Account
 
 Login using a local account created on the Virtual machine in question using the portal or CLI. Use the format {DOMAIN}\\{USERNAME} for the username when logging in.
 
@@ -71,7 +74,7 @@ Pre-requisites:
 - The VM is joined to a domain
 
 
-# Notes and known issues
+## Notes and known issues
 
 - File transfer is only supported using the Native RDP or SSH client, not through the Azure Portal directly.
 
