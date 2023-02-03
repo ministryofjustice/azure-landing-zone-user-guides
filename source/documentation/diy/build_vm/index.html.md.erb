@@ -125,11 +125,13 @@ A single Windows VM with a single NIC and two data disks. An Antivirus extension
       data_disks = {
         data1 = {
           size          = 20
+          lun           = 10
           type          = "Standard_LRS"
           create_option = "Empty"
         },
         data2 = {
           size          = 25
+          lun           = 20
           type          = "Standard_LRS"
           create_option = "Empty"
         }
@@ -181,6 +183,7 @@ vm_specifications_linux = {
       data_disks = {
         data_files = {
           size          = 20
+          lun           = 10
           type          = "Standard_LRS"
           create_option = "Empty"
         },
@@ -222,6 +225,7 @@ vm_specifications_linux = {
         data_disks = {
           data_files = {
             size          = 20
+            lun           = 10
             type          = "Standard_LRS"
             create_option = "Empty"
           },
@@ -270,6 +274,7 @@ locals {
       data_disks = {
         data1 = {
           size          = 20
+          lun           = 10
           type          = "Standard_LRS"
           create_option = "Empty"
         },
@@ -313,6 +318,8 @@ locals {
 - Enabling monitoring on a Virtual Machine installs the Azure Monitor Agent on the VM via an extension and connects it to the Log Analytics workspace in your Spoke. See ALZ Monitoring documentation for further info.
 
 - Azure Landing Zone enables the Azure Hybrid Benefit due to the existing Enterprise Agreement with Microsoft. MOJ users can take advantage of this benefit by setting the `licence_type` attribute within the `vm_specification` variable to `Windows_Server` or `Windows_Client` accordingly. This setting is optional and will default to `None` if not set.
+
+- The `lun` attribute within the `vm_specification` variable is required for each additional disk disk added via the data_disks block. Attribute must be unique for each disk per VM (recommend multiples of 10).
 
 - The `patch_class` attribute within the `vm_specification` variable will be different depending on the environment. Possible values and explanation:
   - `Bronze1` - Dev -  Patch wave 1
