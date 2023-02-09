@@ -46,11 +46,13 @@ Anything that can send logs to a Log Analytics Workspace can be monitored using 
 
 Alerts in Azure can be configured using thresholds on Metric values or query results, which makes them easy to use in conjunction with resources that are sending logs to a Log Analytics Workspace. Once configured, they are linked to an Action Group which then determines what action to take (Send an email or SMS, restart a server etc...)
 
-At current time, ALZ do not provide any alerts on a Spoke as standard due to the bespoke nature of defining an alert threshold. Often, useful alerting requires application or service specific knowledge to configure.
+At current time, ALZ do not provide any alerts on a Spoke as standard due to the bespoke nature of defining an alert threshold. Often, useful alerting requires application or service specific knowledge to configure. 
+  
+The ALZ team maintain a Github repository [here](https://github.com/ministryofjustice/staff-infrastructure-alz-monitor-alerts) that aims to centralise the configuration of alerting for all teams across all Workloads and environments in the Landing Zone. 
 
 
 ## Coming soon
 
 - Access for users who don't use the Azure Portal via PowerBI. In the meantime, you can get started with consuming ALZ logs in PowerBI immediately using [this documentation](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/log-powerbi)
 - Integration with ServiceNow for automatic creation and assignment of tickets
-- Templated standard alerting that can be used as basis for more tailored alerts and actions
+- <del>Templated standard alerting that can be used as basis for more tailored alerts and actions </del>
