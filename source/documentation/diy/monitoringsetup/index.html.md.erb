@@ -40,13 +40,13 @@ This workbook is pre-loaded with queries and can be used as a template by creati
 
 ## Grant View only access
 
-In order for spoke owners to delegate the monitoring of their resources they can use a Built-in Azure RBAC group called `Monitoring Reader`. The members of this group get read only access to monitoring data. 
+In order for spoke owners to delegate the monitoring of their resources they can use a cutom Azure RBAC group called `Mojo-Azure-Subscription-<your subscription identifier>_MonitoringReader`. The members of this group get read only access to monitoring data. 
 
 This role is available per spoke/workload.
 
 Spoke owners by definition would have owner role on the spoke/workload so should be able to add/remove users into this Azure RBAC role.
 
-Once a user is added to the `Monitoring Reader` RBAC role , he/she will be able to login to Azure Portal and visualize the logs in the Dashboard created as described previously.
+Once a user is added to the `Mojo-Azure-Subscription-<your subscription identifier>_MonitoringReader` RBAC role , he/she will be able to login to Azure Portal and visualize the logs in the Dashboard created as described previously.
 
 Steps:
 
