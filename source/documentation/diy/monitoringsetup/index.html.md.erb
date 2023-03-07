@@ -40,13 +40,15 @@ This workbook is pre-loaded with queries and can be used as a template by creati
 
 ## Grant View only access
 
-In order for spoke owners to delegate the monitoring of their resources they can use a cutom Azure RBAC group called `Mojo-Azure-Subscription-<your subscription identifier>_MonitoringReader`. The members of this group get read only access to monitoring data. 
+The Spoke Owners can delegate the monitoring of their resources to other individuals. 
+
+Spoke Owner is a designated thing and each Spoke has one and that they are provided by the requesting party at the time of Spoke creation.
+
+In order for spoke owners to delegate the monitoring of their resources they can use a Built in Azure RBAC group called `Monitoring Reader`. The members of this group get read only access to monitoring data. 
 
 This role is available per spoke/workload.
 
-Spoke owners by definition would have owner role on the spoke/workload so should be able to add/remove users into this Azure RBAC role.
-
-Once a user is added to the `Mojo-Azure-Subscription-<your subscription identifier>_MonitoringReader` RBAC role , he/she will be able to login to Azure Portal and visualize the logs in the Dashboard created as described previously.
+Once a user is added to the `Monitoring Reader` RBAC role , he/she will be able to login to Azure Portal and visualize the logs in the Dashboard created as described previously.
 
 Steps:
 
@@ -56,7 +58,9 @@ Steps:
 
 2.) Go to **Subscriptions** --> **Access Control (IAM)** --> **Role assignments** , Click **Add** and then click **Add Role Assignment**
 
-3.) In the screen that follows , click **Members** and then click **Select Members** to find the user or user group to be delegated this right.
+3.) In the screen that follows , click **Roles** and then select **Monitoring Reader**, click **Next**.
+
+4.) Under **Members** and click **Select Members** to find the user or user group to be delegated this right.
 
 4.) Once selected click **Next** and then **Finish** to close out the page. 
 
