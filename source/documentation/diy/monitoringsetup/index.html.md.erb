@@ -44,11 +44,14 @@ The Spoke Owners can delegate the monitoring of their resources to other individ
 
 Spoke Owner is a designated thing and each Spoke has one and that they are provided by the requesting party at the time of Spoke creation.
 
-In order for spoke owners to delegate the monitoring of their resources they can use a Built in Azure RBAC group called `Monitoring Reader`. The members of this group get read only access to monitoring data. 
+Each spoke comes privisioned with a few custom Azure AD groups which are added as members to Azure Built-in RBAC roles. 
 
-This role is available per spoke/workload.
+E.g. for spoke `MoJ-OFFICIAL-Prod-Spoke-XeroxPrint` a custom AAD group `Mojo-Azure-Subscription-XeroxPrint_MonitoringReader` is created and added to the Built-in RBAC role `Monitoring Reader`.
 
-Once a user is added to the `Monitoring Reader` RBAC role , he/she will be able to login to Azure Portal and visualize the logs in the Dashboard created as described previously.
+
+In order for spoke owners to delegate the monitoring of their resources they need to use Azure portal to add the respective users as members of their spoke specific AAD group. 
+
+Once a user is added to the ``Mojo-Azure-Subscription-<WorkloadID>_MonitoringReader`` RBAC role , he/she will be able to login to Azure Portal and visualize the logs in the Dashboard created as described previously.
 
 Steps:
 
@@ -56,15 +59,23 @@ Steps:
     
     Note: A workload is basically a subscription in Azure Landing Zone.
 
-2.) Go to **Subscriptions** --> **Access Control (IAM)** --> **Role assignments** , Click **Add** and then click **Add Role Assignment**
+2.) Go to **Subscriptions** --> **Access Control (IAM)** --> **Role assignments**
 
-3.) In the screen that follows , click **Roles** and then select **Monitoring Reader**, click **Next**.
+3.) Click on **Scope** and set it to **This Resource**
 
-4.) Under **Members** and click **Select Members** to find the user or user group to be delegated this right.
+4.) Locate the Built-in RBAC role you want to delegate your users to and expand the role.
 
-4.) Once selected click **Next** and then **Finish** to close out the page. 
+5.) You will see groups starting with `Mojo-Azure-Subscription-xxxx`. Click on the group.
 
-5.) Ask your users to logout and login back to Azure Portal to start viewing the Monitoring data.
+6.) On the Group screen that follows, click `Members`
+
+7.) Click **Add Members** ( You should have this as enabeld as you are the group owner).
+
+8.) In the resulting User Search box , type in the email address of the person this role needs to be delegated to.
+
+9.) Add more users if required and then click **OK** to save the changes.
+
+Follow these steps to grant any other type of Azure RBAC right to required user accounts.
 
 
 ## Monitoring something else
