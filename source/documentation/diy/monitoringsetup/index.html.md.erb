@@ -59,21 +59,23 @@ Steps:
     
     Note: A workload is basically a subscription in Azure Landing Zone.
 
-2.) Go to **Subscriptions** --> **Access Control (IAM)** --> **Role assignments**
+2.) Select "Subscriptions" and then the "Access Control (IAM)" blade from the left hand menu.
 
-3.) Click on **Scope** and set it to **This Resource**
+3.) On the Right hand you will see **Role assignments**
 
-4.) Locate the Built-in RBAC role you want to delegate your users to and expand the role.
+4.) In the search filters, select **Scope** and set it to **This Resource**
 
-5.) You will see groups starting with `Mojo-Azure-Subscription-xxxx`. Click on the group.
+5.) Locate the Built-in RBAC role you want to delegate your users to and expand the role.
 
-6.) On the Group screen that follows, click `Members`
+6.) You will see groups starting with `Mojo-Azure-Subscription-xxxx`. Click on the group visible as ``Mojo-Azure-Subscription-<WorkloadID>_MonitoringReader``.
 
-7.) Click **Add Members** ( You should have this as enabled as you are the group owner).
+7.) On the Group screen that follows, click `Members`
 
-8.) In the resulting User Search box , type in the email address of the person this role needs to be delegated to.
+8.) Click **Add Members** ( You should have this as enabled as you are the group owner).
 
-9.) Add more users if required and then click **OK** to save the changes.
+9.) In the resulting User Search box , type in the email address of the person this role needs to be delegated to.
+
+10.) Add more users if required and then click **OK** to save the changes.
 
 Follow these steps to grant any other type of Azure RBAC right to required user accounts.
 
