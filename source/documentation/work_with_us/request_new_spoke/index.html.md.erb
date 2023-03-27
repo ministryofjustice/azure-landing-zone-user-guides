@@ -20,7 +20,18 @@ When requesting a brand new spoke, or expanding an existing spoke with an additi
 
 Have you already provisioned an Azure Subscription or would you like one to be created for you? If providing your own subscription, we'll need the correct RBAC assignments for our deployment tool service principals before we can start.
 
-### 2. Location
+### 2. Spoke Owners
+
+Two user accounts that are ultimately responsible for this Spoke. These accounts will be given the ability to manage RBAC across the Spoke or Workload
+
+##### Example
+
+```
+someone@justice.gov.uk  
+someone_else@justice.gov.uk
+```
+
+### 3. Location
 
 The region that Spoke resources will be created in.
 
@@ -28,7 +39,7 @@ The region that Spoke resources will be created in.
 
 UK South or UK West
 
-### 3. Spoke or Workload identifier
+### 4. Spoke or Workload identifier
 
 A unique string that identifies the functionality hosted in the new spoke. Could be a specific application or project name. We define and build new spokes using IaC and this value is used to determine the name of a number of resources.
 
@@ -47,7 +58,7 @@ Automation Account: auto-xwc-core-001
 etc...
 ```
 
-### 4. Environments
+### 5. Environments
 
 Which environments the resources will be created in, selected from the following:
 
@@ -60,7 +71,7 @@ Which environments the resources will be created in, selected from the following
 We require a minimum of `Development` and `Production`, but NLE/Pre-Production can be added if required.
 
 
-### 5. Tags
+### 6. Tags
 
 Tags are our primary means of identifying the owner and purpose of each resource, as well as feeding in to our cost management and billing logic. At a minimum we require tags for the following: 
 
@@ -72,7 +83,7 @@ Tags are our primary means of identifying the owner and purpose of each resource
 
 
 
-### 6. Network Address Spaces
+### 7. Network Address Spaces
 
 Details on the address spaces you require for your core VNET and Subnets within it. This should be ununsed network space reserved in IPAM.
 
@@ -87,7 +98,7 @@ Details on the address spaces you require for your core VNET and Subnets within 
 
 
 
-### 7. Extras
+### 8. Extras
 
 Anything additional not captured in the above. This is open ended and can include things like:
 
