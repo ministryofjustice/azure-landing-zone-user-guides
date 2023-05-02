@@ -17,9 +17,9 @@ Overview of the technology can be found [here](https://learn.microsoft.com/en-us
 
 The VMS which will be added to the maintenance configurations will need to have their patch orchestration mode set to Azure Orchestrated (Automatic By Platform).
 
-This can be done either via portal ( refer https://learn.microsoft.com/en-us/azure/update-center/manage-update-settings?tabs=manage-single-overview%2Cmanage-scale-overview)
+This can be done either via portal [here](https://learn.microsoft.com/en-us/azure/update-center/manage-update-settings?tabs=manage-single-overview%2Cmanage-scale-overview)
 
-Or if can be specified as an option when you use the Azure Landing Zone VM Module ( https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) to create then vm.
+Or if can be specified as an option when you use the Azure Landing Zone VM Module [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) to create then vm.
 
 ## Quick-Start
 
@@ -41,7 +41,7 @@ The Maintenance setup consists of two elements:
 
 ### Add a new maintenance configuration
 
-It is recommended to configure the maintenance configurations per guidelines laid out in https://security-guidance.service.justice.gov.uk/patch-management-guide/#patch-management-guide .
+It is recommended to configure the maintenance configurations per guidelines laid out in [here](https://security-guidance.service.justice.gov.uk/patch-management-guide).
 To add a new maintenance configuration , an entry can be added to the appropriate maintenance configuration block in the relevant `maintenance_config.auto.tfvars` file.
 
 Each ALZ Spoke/Workload has a dedicated `maintenance_config.auto` per environment.
