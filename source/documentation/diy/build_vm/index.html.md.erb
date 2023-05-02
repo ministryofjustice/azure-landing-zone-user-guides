@@ -1,257 +1,477 @@
 ---
-title: VM Creation Module
+
+title: VM  Creation  Module
+
 last_reviewed_on: 2023-10-01
+
 review_in: 6 months
+
 weight: 3100
+
 ---
+
+  
 
 # Building VMs in ALZ
 
-Virtual Machines in Azure Landing Zone can be built and deployed either using code or manually via the Azure Portal. Teams running workloads in ALZ are free to use whichever tooling suits them best. 
+  
 
-The ALZ team do provide and maintain a Terraform module that can make deployment of Windows and Linux VM's easier. It aims to provide a number of configuration options and simplifies integration of VM's into standard ALZ Spoke resources. 
+Virtual  Machines  in  Azure  Landing  Zone can be built and deployed either using code or manually via the Azure  Portal. Teams running workloads in  ALZ are free to use whichever tooling suits them best.
 
-The module and standard documentation can be found [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm)
+  
+
+The  ALZ team do provide and maintain a Terraform  module that can make deployment of Windows and Linux  VM's easier. It aims to provide a number of configuration options and simplifies integration of VM's into standard ALZ  Spoke resources.
+
+  
+
+The  module and standard documentation can be found [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm)
+
+  
 
 **Features:**
 
-- Define the settings for multiple Virtual Machines in a single variable
+  
+
+- Define the settings for multiple Virtual  Machines  in a single variable
+
 - Configure multiple NICs per VM
+
 - Configure multiple data disks per VM
-- Automatic credential creation and push into Spoke Keyvault
+
+- Automatic credential creation and push into Spoke  Keyvault
+
 - Optional enrollment into scheduled power off/on for cost saving
+
 - Optional installation of Antivirus with a VM extension
+
 - Optionally enable Azure monitor agent for the VM
-- Optional enrollment into Spoke Recovery Services Vault for backups
+
+- Optional enrollment into Spoke  Recovery  Services  Vault  for backups
+
 - Optional enrollment into ALZ automated patching (Windows) and (Linux)
+
 - Optionally enable host based encryption - see pre-requisites and considerations before enabling [here](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-enable-host-based-encryption-portal?tabs=azure-powershell)
+
+  
 
 ## Using the ALZ VM Terraform module
 
+  
+
 ### Pre-reqs
 
-Supported Terraform and Provider versions are maintained in the source repository [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) in the individual module readmes.
+  
 
+Supported  Terraform and Provider versions are maintained in the source repository [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) in the individual module readmes.
+
+  
+  
 
 ### Usage
 
-The module can be called in your code [directly from Github](https://www.terraform.io/language/modules/sources#github). It is recommended to pin the module to a specific version to avoid breaking changes in your code as the module is developed. In the example below we're using v1.0. Releases can be tracked [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/releases).
+  
+
+The  module can be called in your code [directly from Github](https://www.terraform.io/language/modules/sources#github). It is recommended to pin the module to a specific version to avoid breaking changes in your code as the module is developed. In the example below we're using v1.0. Releases can be tracked [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/releases).
+
+  
 
 **Linux**
 
+  
+
 ```
+
 module "linux_vm_tests" {
-    source                                      = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v1.1/alz-linux-vm"
-    resource_group                              = "rg-alz-vm-test-001"
-    vm_specifications                           = local.vm_specifications_linux
-    storage_account_boot_diag_name              = "stalzvmtest7272"
-    storage_account_boot_diag_resource_group    = "rg-alz-vm-test-001"
-    keyvault_name                               = "kv-alz-vm-test-001"
-    keyvault_rg                                 = "rg-alz-vm-test-001"
-    recovery_vault_name                         = "rsv-alz-test-001"
-    recovery_vault_resource_group               = "rg-alz-vm-test-001"
-    data_collection_rule_monitor_name           = "dcr-alz-vm-test-ama-001"
-    data_collection_rule_monitor_resource_group = "rg-azmon-test-001"
-  }
+
+source = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v1.1/alz-linux-vm"
+
+resource_group = "rg-alz-vm-test-001"
+
+vm_specifications = local.vm_specifications_linux
+
+storage_account_boot_diag_name = "stalzvmtest7272"
+
+storage_account_boot_diag_resource_group = "rg-alz-vm-test-001"
+
+keyvault_name = "kv-alz-vm-test-001"
+
+keyvault_rg = "rg-alz-vm-test-001"
+
+recovery_vault_name = "rsv-alz-test-001"
+
+recovery_vault_resource_group = "rg-alz-vm-test-001"
+
+data_collection_rule_monitor_name = "dcr-alz-vm-test-ama-001"
+
+data_collection_rule_monitor_resource_group = "rg-azmon-test-001"
+
+}
+
 ```
+
 **Windows**
 
-```  
-  module "windows_vm_tests" {
-    source                                       = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v1.1/alz-win-vm"
-    resource_group                               = "rg-alz-vm-test-001"
-    vm_specifications                            = local.vm_specifications_win
-    storage_account_boot_diag_name               = "stalzvmtest7272"
-    storage_account_boot_diag_resource_group     = "rg-alz-vm-test-001"
-    keyvault_name                                = "kv-alz-vm-test-001"
-    keyvault_rg                                  = "rg-alz-vm-test-001"
-    recovery_vault_name                          = "rsv-alz-test-001"
-    recovery_vault_resource_group                = "rg-alz-vm-test-001"
-    data_collection_rule_monitor_name            = "dcr-alz-vm-test-ama-001"
-    data_collection_rule_monitor_resource_group  = "rg-alz-vm-test-001"
-    
-  }
+  
+
 ```
+
+module "windows_vm_tests" {
+
+source = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v1.1/alz-win-vm"
+
+resource_group = "rg-alz-vm-test-001"
+
+vm_specifications = local.vm_specifications_win
+
+storage_account_boot_diag_name = "stalzvmtest7272"
+
+storage_account_boot_diag_resource_group = "rg-alz-vm-test-001"
+
+keyvault_name = "kv-alz-vm-test-001"
+
+keyvault_rg = "rg-alz-vm-test-001"
+
+recovery_vault_name = "rsv-alz-test-001"
+
+recovery_vault_resource_group = "rg-alz-vm-test-001"
+
+data_collection_rule_monitor_name = "dcr-alz-vm-test-ama-001"
+
+data_collection_rule_monitor_resource_group = "rg-alz-vm-test-001"
+
+}
+
+```
+
+  
 
 ### Variables
 
-Further details can be found in the source repository readmes. 
+  
 
+Further details can be found in the source repository readmes.
 
-| Variable            | Explanation |
+  
+  
+
+| Variable | Explanation |
 |---------------------|-------------|
-| `resource_group`                                                                  | Where the VM's will be deployed|
-| `storage_account_boot_diag_name` `storage_account_boot_diag_resource_group`       | Details of Storage account into which boot diagnostic logs will be streamed|
-| `keyvault_name` `keyvault_rg`                                                     | Generated user account credentials are pushed here|
-| `recovery_vault_name`, `recovery_vault_resource_group`                            | Optional. However, you must specify these if backup is enabled in the `vm_specifications` variable|
+| `resource_group` | Where the VM's will be deployed|
+| `storage_account_boot_diag_name` `storage_account_boot_diag_resource_group` | Details of Storage account into which boot diagnostic logs will be streamed|
+| `keyvault_name` `keyvault_rg` | Generated user account credentials are pushed here|
+| `recovery_vault_name`, `recovery_vault_resource_group` | Optional. However, you must specify these if backup is enabled in the `vm_specifications` variable|
 | `data_collection_rule_monitor_name`,`data_collection_rule_monitor_resource_group` | Optional. However, you must specify these if monitor is enabled in the `vm_specifications` variable|
-| `vm_specifications`                                                               | Configuration parameters for one or more VM's, see below for usage examples|
+| `vm_specifications` | Configuration parameters for one or more VM's, see below for usage examples|
+ 
 
-All ALZ Spokes are built with a Keyvault, Storage Account for Boot diagnostics, Recovery Services Vault for backups and a Data Collection Rule for use with Azure Monitor as standard, generally these would be the resources used when populating the variables.
+All  ALZ  Spokes are built with a Keyvault, Storage  Account  for  Boot diagnostics, Recovery  Services  Vault  for backups and a Data  Collection  Rule  for use with Azure  Monitor as standard, generally these would be the resources used when populating the variables.
+  
 
 ### Examples
 
-The majority of the VM configuration options are defined using the `vm_specifications` object. Multiple VM's can be defined inside a single instance of this object. Some attributes are optional and will generate default values if ommitted. There are slight differences between the options available in the Linux and Windows versions of the module. Again, check the readme in the source repository and use the examples below as guides.
+The majority of the VM configuration options are defined using the `vm_specifications` object. Multiple  VM's can be defined inside a single instance of this object. Some attributes are optional and will generate default values if ommitted. There are slight differences between the options available in the Linux and Windows versions of the module. Again, check the readme in the source repository and use the examples below as guides.
 
 #### Single Windows VM
 
 A single Windows VM with a single NIC and two data disks. An Antivirus extension is installed and some custom tags have been applied.
 
-The patch mode is set to AutomaticByPlatform which also needs provision_vm_agent to set to true. 
+  
 
-```
-  vm_specifications = {
-    vm-test-win-001 = {                                
-      vm_size               = "Standard_D3_v2"
-      zone                  = "1"
-      publisher             = "MicrosoftWindowsServer"
-      offer                 = "WindowsServer"
-      sku                   = "2016-Datacenter"
-      version               = "latest"
-      admin_user            = "azureuser"
-      patch_mode            = "AutomaticByPlatform"
-      provision_vm_agent    = true
-      patch_assessment_mode = "AutomaticByPlatform"
-      scheduled_shutdown    = false
-      monitor               = false
-      backup                = false
-      enable_av          = true 
+The patch mode is set to AutomaticByPlatform which also needs provision_vm_agent to set to true.
 
-      network = {
-        nic-mgmt = {
-          vnet                = "vnet-shared-ad-001"
-          vnet_resource_group = "rg-shared-core-001"
-          subnet              = "snet-shared-ad-001"
-          ip_address          = "10.193.131.13"
-        }
-      }
-
-      data_disks = {
-        data1 = {
-          size          = 20
-          lun           = 10
-          type          = "Standard_LRS"
-          create_option = "Empty"
-        },
-        data2 = {
-          size          = 25
-          lun           = 20
-          type          = "Standard_LRS"
-          create_option = "Empty"
-        }
-      }
-
-      tags = {
-        application = "windows_app"
-        owner       = "alz"
-      }
-    }
-  }
+  
 
 ```
 
+vm_specifications = {
+
+vm-test-win-001 = {
+
+vm_size = "Standard_D3_v2"
+
+zone = "1"
+
+publisher = "MicrosoftWindowsServer"
+
+offer = "WindowsServer"
+
+sku = "2016-Datacenter"
+
+version = "latest"
+
+admin_user = "azureuser"
+
+patch_mode = "AutomaticByPlatform"
+
+provision_vm_agent = true
+
+patch_assessment_mode = "AutomaticByPlatform"
+
+scheduled_shutdown = false
+
+monitor = false
+
+backup = false
+
+enable_av = true
+
+  
+
+network = {
+
+nic-mgmt = {
+
+vnet = "vnet-shared-ad-001"
+
+vnet_resource_group = "rg-shared-core-001"
+
+subnet = "snet-shared-ad-001"
+
+ip_address = "10.193.131.13"
+
+}
+
+}
+
+  
+
+data_disks = {
+
+data1 = {
+
+size = 20
+
+lun = 10
+
+type = "Standard_LRS"
+
+create_option = "Empty"
+
+},
+
+data2 = {
+
+size = 25
+
+lun = 20
+
+type = "Standard_LRS"
+
+create_option = "Empty"
+
+}
+
+}
+
+  
+
+tags = {
+
+application = "windows_app"
+
+owner = "alz"
+
+}
+
+}
+
+}
+
+  
+
+```
+
+  
+  
 
 #### Multiple Linux VMs
 
+  
+
 Two Linux VMs specified with multiple NICs on different VNets
 
+  
+
 ```
+
 vm_specifications_linux = {
-    vm-test-nix-01 = {
-      vm_size            = "Standard_D3_v2"
-      zone               = "1"
-      publisher          = "Canonical"
-      offer              = "UbuntuServer"
-      sku                = "16.04-LTS"
-      version            = "latest"
-      admin_user         = "azureuser"
-      patch_mode            = "AutomaticByPlatform"
-      provision_vm_agent    = true
-      patch_assessment_mode = "AutomaticByPlatform"
-      scheduled_shutdown = false
-      monitor            = false
-      backup             = false
 
-      network = {
-        nic-mgmt = {
-          vnet                = "vnet-alz-vm-mgmt-001"
-          vnet_resource_group = "rg-alz-vm-mgmt-001"
-          subnet              = "snet-alz-vm-mgmt-001"
-          ip_address          = "192.168.99.6"
-        }
-        nic-red = {
-          vnet                = "vnet-alz-vm-red-001"
-          vnet_resource_group = "rg-alz-vm-red-001"
-          subnet              = "snet-alz-vm-red-001"
-          ip_address          = "10.1.1.10"
-        }
-      }
+vm-test-nix-01 = {
 
-      data_disks = {
-        data_files = {
-          size          = 20
-          lun           = 10
-          type          = "Standard_LRS"
-          create_option = "Empty"
-        },
-      }
+vm_size = "Standard_D3_v2"
 
-      tags = {
-        application = "linux_app"
-        owner       = "alz"
-      }
-    }
+zone = "1"
 
-    vm-test-nix-02 = {
-        vm_size            = "Standard_D3_v2"
-        zone               = "1"
-        publisher          = "Canonical"
-        offer              = "UbuntuServer"
-        sku                = "16.04-LTS"
-        version            = "latest"
-        admin_user         = "azureuser"
-        patch_mode            = "AutomaticByPlatform"
-        provision_vm_agent    = true
-        patch_assessment_mode = "AutomaticByPlatform"
-        scheduled_shutdown = false
-        monitor            = false
-        backup             = false
+publisher = "Canonical"
+
+offer = "UbuntuServer"
+
+sku = "16.04-LTS"
+
+version = "latest"
+
+admin_user = "azureuser"
+
+patch_mode = "AutomaticByPlatform"
+
+provision_vm_agent = true
+
+patch_assessment_mode = "AutomaticByPlatform"
+
+scheduled_shutdown = false
+
+monitor = false
+
+backup = false
+
   
-        network = {
-          nic-mgmt = {
-            vnet                = "vnet-alz-vm-mgmt-001"
-            vnet_resource_group = "rg-alz-vm-mgmt-001"
-            subnet              = "snet-alz-vm-mgmt-001"
-            ip_address          = "192.168.99.7"
-          }
-          nic-red = {
-            vnet                = "vnet-alz-vm-red-001"
-            vnet_resource_group = "rg-alz-vm-red-001"
-            subnet              = "snet-alz-vm-red-001"
-            ip_address          = "10.1.1.11"
-          }
-        }
+
+network = {
+
+nic-mgmt = {
+
+vnet = "vnet-alz-vm-mgmt-001"
+
+vnet_resource_group = "rg-alz-vm-mgmt-001"
+
+subnet = "snet-alz-vm-mgmt-001"
+
+ip_address = "192.168.99.6"
+
+}
+
+nic-red = {
+
+vnet = "vnet-alz-vm-red-001"
+
+vnet_resource_group = "rg-alz-vm-red-001"
+
+subnet = "snet-alz-vm-red-001"
+
+ip_address = "10.1.1.10"
+
+}
+
+}
+
   
-        data_disks = {
-          data_files = {
-            size          = 20
-            lun           = 10
-            type          = "Standard_LRS"
-            create_option = "Empty"
-          },
-        }
+
+data_disks = {
+
+data_files = {
+
+size = 20
+
+lun = 10
+
+type = "Standard_LRS"
+
+create_option = "Empty"
+
+},
+
+}
+
   
-        tags = {
-          application = "linux_app"
-          owner       = "alz"
-        }
-      }
-  }
+
+tags = {
+
+application = "linux_app"
+
+owner = "alz"
+
+}
+
+}
+
+  
+
+vm-test-nix-02 = {
+
+vm_size = "Standard_D3_v2"
+
+zone = "1"
+
+publisher = "Canonical"
+
+offer = "UbuntuServer"
+
+sku = "16.04-LTS"
+
+version = "latest"
+
+admin_user = "azureuser"
+
+patch_mode = "AutomaticByPlatform"
+
+provision_vm_agent = true
+
+patch_assessment_mode = "AutomaticByPlatform"
+
+scheduled_shutdown = false
+
+monitor = false
+
+backup = false
+
+network = {
+
+nic-mgmt = {
+
+vnet = "vnet-alz-vm-mgmt-001"
+
+vnet_resource_group = "rg-alz-vm-mgmt-001"
+
+subnet = "snet-alz-vm-mgmt-001"
+
+ip_address = "192.168.99.7"
+
+}
+
+nic-red = {
+
+vnet = "vnet-alz-vm-red-001"
+
+vnet_resource_group = "rg-alz-vm-red-001"
+
+subnet = "snet-alz-vm-red-001"
+
+ip_address = "10.1.1.11"
+
+}
+
+}
+
+data_disks = {
+
+data_files = {
+
+size = 20
+
+lun = 10
+
+type = "Standard_LRS"
+
+create_option = "Empty"
+
+},
+
+}
+
+tags = {
+
+application = "linux_app"
+
+owner = "alz"
+
+}
+
+}
+
+}
 
 ```
-
-
-#### Full usage example
+#### Full Usage example
 
 Full code snippet specifying the configuration of a Windows VM in a local which is passed to the module. Also shown is how to use an output from the module in a separate resource, in this case registering one of the NICs from a VM that the module created into a Load Balancer pool.
 
@@ -297,42 +517,75 @@ locals {
         owner       = "alz"
       }
     }
-  }
+  }  
 
+module "windows_vm_tests" {
 
-  module "windows_vm_tests" {
-    source                                      = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/alz-win-vm?ref=v1.0"
-    resource_group                              = "rg-alz-vm-test-001"
-    vm_specifications                           = local.vm_specifications_win
-    storage_account_boot_diag_name              = "stalzvmtest7272"
-    storage_account_boot_diag_resource_group    = "rg-alz-vm-test-001"
-    keyvault_name                               = "kv-alz-vm-test-001"
-    keyvault_rg                                 = "rg-alz-vm-test-001"
-    data_collection_rule_monitor_name           = "dcr-alz-vm-test-ama-001"
-    data_collection_rule_monitor_resource_group = "rg-alz-vm-test-001"
-  }
+source = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/alz-win-vm?ref=v1.0"
 
-  output "nic_ids" {
-    value = module.linux_vm.nics
-  }
+resource_group = "rg-alz-vm-test-001"
 
-  resource "azurerm_network_interface_backend_address_pool_association" "windows_app" {
-    network_interface_id    = output.nic_ids["vm-test-win-01"]
-    ip_configuration_name   = "ipconfig-vm-test-win-01
-    backend_address_pool_id = data.azurerm_lb_backend_address_pool.windows_app.id
-  }
+vm_specifications = local.vm_specifications_win
+
+storage_account_boot_diag_name = "stalzvmtest7272"
+
+storage_account_boot_diag_resource_group = "rg-alz-vm-test-001"
+
+keyvault_name = "kv-alz-vm-test-001"
+
+keyvault_rg = "rg-alz-vm-test-001"
+
+data_collection_rule_monitor_name = "dcr-alz-vm-test-ama-001"
+
+data_collection_rule_monitor_resource_group = "rg-alz-vm-test-001"
+
+}
+
+  
+
+output "nic_ids" {
+
+value = module.linux_vm.nics
+
+}
+
+  
+
+resource "azurerm_network_interface_backend_address_pool_association" "windows_app" {
+
+network_interface_id = output.nic_ids["vm-test-win-01"]
+
+ip_configuration_name = "ipconfig-vm-test-win-01
+
+backend_address_pool_id = data.azurerm_lb_backend_address_pool.windows_app.id
+
+}
+
 ```
 
 ### Notes
 
+  
+
 - User credentials are generated and stored as a secret in the Keyvault provided to the module. Note that whichever account used by Terraform will need permissions to create secrets in this Keyvault. Secrets are named according to the VM to which they belong in the format "{VMNAME}-password".
+
+  
 
 - Enabling monitoring on a Virtual Machine installs the Azure Monitor Agent on the VM via an extension and connects it to the Log Analytics workspace in your Spoke. See ALZ Monitoring documentation for further info.
 
+  
+
 - Azure Landing Zone enables the Azure Hybrid Benefit due to the existing Enterprise Agreement with Microsoft. MOJ users can take advantage of this benefit by setting the `licence_type` attribute within the `vm_specification` variable to `Windows_Server` or `Windows_Client` accordingly. This setting is optional and will default to `None` if not set.
+
+  
 
 - The `lun` attribute within the `vm_specification` variable is required for each additional disk disk added via the data_disks block. Attribute must be unique for each disk per VM (recommend multiples of 10).
 
+  
+
 - The `patch_mode` attribute within the `vm_specification` variable will need to be set to `AutomaticByPlatform` in order to use the self service patching functionality available via ALZ patching repo [here](https://https://github.com/ministryofjustice/staff-infrastructure-alz-patching)
 
-- Terraform destroy will be unable to remove all of the resources this module creates if `backup = true` is set and a recovery services vault name/group is provided. This is due to the resource lock on all ALZ Recovery Service Vaults to prevent accidental deletion. Removing the backups must be performed manually and outside of Terraform after the destroy has failed. 
+  
+
+- Terraform destroy will be unable to remove all of the resources this module creates if `backup = true` is set and a recovery services vault name/group is provided. This is due to the resource lock on all ALZ Recovery Service Vaults to prevent accidental deletion. Removing the backups must be performed manually and outside of Terraform after the destroy has failed.
+
