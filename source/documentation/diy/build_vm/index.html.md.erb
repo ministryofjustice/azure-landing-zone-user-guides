@@ -331,6 +331,6 @@ locals {
 
 - The `lun` attribute within the `vm_specification` variable is required for each additional disk disk added via the data_disks block. Attribute must be unique for each disk per VM (recommend multiples of 10).
 
-- The `patch_mode` attribute within the `vm_specification` variable will need to be set to `AutomaticByPlatform` in order to use the self service patching functionality available via ALZ patching repo [here](https://https://github.com/ministryofjustice/staff-infrastructure-alz-patching)
+- The `patch_mode` attribute within the `vm_specification` variable will need to be set to `AutomaticByPlatform` in order to use the self service patching functionality available via ALZ patching repo [here](https://github.com/ministryofjustice/staff-infrastructure-alz-patching)
 
 - Terraform destroy will be unable to remove all of the resources this module creates if `backup = true` is set and a recovery services vault name/group is provided. This is due to the resource lock on all ALZ Recovery Service Vaults to prevent accidental deletion. Removing the backups must be performed manually and outside of Terraform after the destroy has failed. 
