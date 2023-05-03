@@ -46,3 +46,198 @@ Or it can be specified as an option when you use the Azure  Landing  Zone  VM  M
 - Open a PR against `main`
 
 - Wait  for a member of the ALZ team to approve and deploy.
+
+## Usage
+
+The  Maintenance setup consists of two elements:
+
+  
+- One or more Maintenance (patch) configurations
+
+- Defines the schedule settings e.g. Start time, recurring interval and patch classifications to deploy per application ( recommended) or in any other way as deemed appropriate by spoke owners.
+
+- One or more Virtual  Machines
+
+- The  Vms are then added to maintenance configurations. Both  Windows and Linux  Vms can be added to the same maintenance configuration if they are subjected to the same patch timings.
+
+### Add a new Maintenance Configuration
+
+It is recommended to configure the maintenance configurations per MOJ Patch guidelines laid out  [here](https://security-guidance.service.justice.gov.uk/patch-management-guide).
+
+To add a new maintenance configuration , an entry can be added to the appropriate maintenance configuration block in the relevant `maintenance_config.auto.tfvars` file.
+
+
+Each  ALZ  Spoke/Workload has a dedicated `maintenance_config.auto` per environment.
+
+
+As an example, to add a maintenance configuration for a group of virtual machines contained within the EUCS  Production  Subscription, the correct `maintenance_config.auto.tfvars` would be located at `terraform/environments/prod/eucs/maintenance_config.auto.tfvars`. To add a maintenance configuration for virtual machines located in the Hub subscription in the Development environment, the correct file would be `terraform/environments/dev/hub/maintenance_config.auto.tfvars` etc...
+
+
+The maintenance configuration object contains several configurable settings which range from being able to choose the reboot setting , picking the patch dates to even been able to pick and choose patch types i.e. critical , security or just definition patches.
+
+### Add virtual machines to the Maintenance Configuration
+
+The  next step is to enroll/Add the virtual machines into appropriate maintenance configurations. This will enforce a patch schedule and other settings on the virtual machines which are added.
+
+We can add one or more virutal machines. To  do the same , edit the relevant `maintenance_config.auto.tfvars` file. The virtual machines are nested inside the maintenance configuration thereby linking the two. As an example, to add the virtual machines of EUCS  Production  Subscription, the correct `maintenance_config.auto.tfvars` would be located at `terraform/environments/prod/eucs/maintenance_config.auto.tfvars`.
+
+### Onboarding and ALZ Support
+
+We're gradually expanding this repository to cover more Spokes and environments but this is based on demand. If your Spoke/Environment is missing (there's no folder for it, or the folder is empty) then please get in touch with the ALZ team.
+
+### Example
+
+
+I have two Windows  VMs  in the Testing subscription in the Development environment namely vmtest01 and vmtest02. These vms already have the patch orchestration mode set to Azure  Orchestrated (Automatic  By  Platform). The vms are part of an application `app1` which is load balanced across these vms. It is determined that the patches to the first vm `vmtest01` should be installed once every month , on the next day when  Microsoft releases their monthly patches. Microsoft release their monthly patches on the 2nd Tuesday of every month. This day is also known as `Patch Tuesday`.
+
+  
+
+It is also determined that the patches to the other vm `vmtest02`  for the same application ( `app1`) should be installed on the next day from the patch date of the first vm to ensure redundancy.
+
+  
+
+So  I create two Maintenance configuration objects with the schedule set to 2nd Wednesday of every month and 2nd Thursday of every month.
+
+  
+
+1. Locate the appropriate files based on the environment and the subscription. As mentioned, our VM are in the Testing subscription in the Dev environment, so I know the files I will need to make changes to are:
+
+  
+
+```
+
+terraform/environments/dev/testing/maintenance_config.auto.tfvars
+
+  
+
+```
+
+  
+
+2. The content of the file looks like this:
+
+  
+
+```
+
+maintenance_configurations = {
+
+"config_2ndTuesday" = {
+
+name = "config_2ndTuesday"
+
+start_date_time = "2021-08-21 18:00"
+
+recur_every = "1Month Second Tuesday"
+
+reboot_setting = "IfRequired"
+
+virtual_machines = {}
+
+  
+
+},
+
+}
+
+  
+
+```
+
+  
+
+As can be seen there is a configuration object `config_2ndTuesday`. This can be copied to form the basis of the new config object as per specific requirements.
+
+I can copy the majority of what exists already as the basis for my new entry. I add a new entry to the `maintenance_configurations` object.
+
+In this example I am adding two objects , one for 2nd Wednesday scheule and another for 2nd Thursday schedule. I am keeping the default 2nd Tuesday schedule as is. If required I can remove it as well..
+
+Now the file looks like this:
+
+  
+
+```
+
+maintenance_configurations = {
+
+"config_2ndTuesday" = {
+
+name = "config_2ndTuesday"
+
+start_date_time = "2021-08-21 18:00"
+
+recur_every = "1Month Second Tuesday"
+
+reboot_setting = "IfRequired"
+
+virtual_machines = {
+
+  
+
+}
+
+},
+
+  
+
+"config_2ndWednesday" = {
+
+name = "config_2ndWednesday"
+
+start_date_time = "2021-08-21 18:00"
+
+recur_every = "1Month Second Wednesday"
+
+reboot_setting = "IfRequired"
+
+virtual_machines = {
+
+"vmtest01" = {
+
+resource_group_name = "rg-hub-poltest-01"
+
+},
+
+}
+
+},
+
+  
+
+"config_2ndThursday" = {
+
+name = "config_2ndThursday"
+
+start_date_time = "2021-08-21 18:00"
+
+recur_every = "1Month Second Thursday"
+
+reboot_setting = "IfRequired"
+
+virtual_machines = {
+
+"vmtest02" = {
+
+resource_group_name = "rg-hub-poltest-01"
+
+},
+
+}
+
+}
+
+}
+
+```
+
+  
+
+The virual machines are also added to their respective maintenance configs. Each vm needs its name as the key of the object and its resource group as one of the attributes to uniquely identify the vm.
+
+## Breakdown of the `maintenance configurations` variable:
+
+| Name                       | Description                                                                                                     | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Required |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------: |
+| maintenance_configurations | Maintenance configurations. https://learn.microsoft.com/en-us/azure/virtual-machines/maintenance-configurations | <pre>map(object({<br> name = string<br> start_date_time = string<br> expiration_date_time = optional(string)<br> duration = optional(string, "02:00")<br> time_zone = optional(string, "UTC")<br> recur_every = string<br> reboot_setting = optional(string, "IfRequired")<br> win_classifications_to_include = optional(list(string), [<br> "Critical",<br> "Definition",<br> "FeaturePack",<br> "Security",<br> "ServicePack",<br> "Tools",<br> "UpdateRollup",<br> "Updates"<br> ])<br> linux_classifications_to_include = optional(list(string), [<br> "Critical",<br> "Security",<br> "Other",<br> ])<br> kb_numbers_to_exclude = optional(list(string))<br> kb_numbers_to_include = optional(list(string))<br> package_names_mask_to_exclude = optional(list(string))<br> package_names_mask_to_include = optional(list(string))<br> virtual_machines = optional(map(object({<br> resource_group_name = string<br> })),) {})<br> }))<br> default = {}<br> } |   Yes    |
+| resource_group_name        | Resource Group the resources will belong to.                                                                    | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |   yes    |
+
