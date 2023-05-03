@@ -1,199 +1,48 @@
-* * *
+---
 
-title: Patching Set Up
+title: Patching  Set  Up
 
-last\_reviewed\_on: 2023-04-28
+last_reviewed_on: 2023-04-28
 
 review_in: 6 months
 
 weight: 3400
 
-* * *
+---
 
-ALZ Windows and Linux Virtual Machine patching facility
-=======================================================
+# ALZ Windows and Linux Virtual Machine patching facility
 
-This repository contains Terraform code that allows spoke owners to create patch schedules (hereafter referred to as maintenance configurations) to patch their Windows and Linux Operating System based Virtual Machines hosted in Azure.
+  
 
-This is done via the update management center in Azure. Overview of the technology can be found [here](https://learn.microsoft.com/en-us/azure/update-center/scheduled-patching?tabs=schedule-updates-single-overview%2Cschedule-updates-scale-overview).
+This repository contains Terraform code that allows spoke owners to create patch schedules (hereafter referred to as maintenance configurations) to patch their Windows and Linux  Operating  System based Virtual  Machines hosted in  Azure.
 
-Pre-requisites
---------------
+This is done via the update management center in  Azure.
+Overview of the technology can be found [here](https://learn.microsoft.com/en-us/azure/update-center/scheduled-patching?tabs=schedule-updates-single-overview%2Cschedule-updates-scale-overview).
 
-The VMS which will be added to the maintenance configurations will need to have their patch orchestration mode set to Azure Orchestrated (Automatic By Platform).
+## Pre-requisites
+
+  
+
+The  VMS which will be added to the maintenance configurations will need to have their patch orchestration mode set to Azure  Orchestrated (Automatic  By  Platform).
+
+  
 
 This can be done either via portal [here](https://learn.microsoft.com/en-us/azure/update-center/manage-update-settings?tabs=manage-single-overview%2Cmanage-scale-overview)
 
-Or it can be specified as an option when you use the Azure Landing Zone VM Module [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) to create the vms.
+  
 
-Quick-Start
------------
-
-* Clone this repository and create a new branch.
-    
-* Make amendments to the relevant files (fully explained below).
-    
-* Open a PR against `main`
-    
-* Wait for a member of the ALZ team to approve and deploy.
-    
-
-Full Usage
-----------
-
-### Summary
-
-The Maintenance setup consists of two elements:
-
-* One or more Maintenance (patch) configurations
-    
-* Defines the schedule settings e.g. Start time, recurring interval and patch classifications to deploy per application ( recommended) or in any other way as deemed appropriate by spoke owners.
-    
-* One or more Virtual Machines
-    
-* The Vms are then added to maintenance configurations. Both Windows and Linux Vms can be added to the same maintenance configuration if they are subjected to the same patch timings.
-    
-
-### Add a new Maintenance Configuration
-
-It is recommended to configure the maintenance configurations per MOJ Patch guidelines laid out [here](https://security-guidance.service.justice.gov.uk/patch-management-guide).
-
-To add a new maintenance configuration , an entry can be added to the appropriate maintenance configuration block in the relevant `maintenance_config.auto.tfvars` file.
-
-Each ALZ Spoke/Workload has a dedicated `maintenance_config.auto` per environment.
-
-As an example, to add a maintenance configuration for a group of virtual machines contained within the EUCS Production Subscription, the correct `maintenance_config.auto.tfvars` would be located at `terraform/environments/prod/eucs/maintenance_config.auto.tfvars`. To add a maintenance configuration for virtual machines located in the Hub subscription in the Development environment, the correct file would be `terraform/environments/dev/hub/maintenance_config.auto.tfvars` etc...
-
-The maintenance configuration object contains several configurable settings which range from being able to choose the reboot setting , picking the patch dates to even been able to pick and choose patch types i.e. critical , security or just definition patches.
-
-### Add virtual machines to the Maintenance Configurations
-
-The next step is to enroll/Add the virtual machines into appropriate maintenance configurations. This will enforce a patch schedule and other settings on the virtual machines which are added.
-
-We can add one or more virutal machines. To do the same , edit the relevant `maintenance_config.auto.tfvars` file. The virtual machines are nested inside the maintenance configuration thereby linking the two. As an example, to add the virtual machines of EUCS Production Subscription, the correct `maintenance_config.auto.tfvars` would be located at `terraform/environments/prod/eucs/maintenance_config.auto.tfvars`.
-
-### Onboarding and ALZ Support
-
-We're gradually expanding this repository to cover more Spokes and environments but this is based on demand. If your Spoke/Environment is missing (there's no folder for it, or the folder is empty) then please get in touch with the ALZ team.
-
-### Example
-
-I have two Windows VMs in the Testing subscription in the Development environment namely vmtest01 and vmtest02. These vms already have the patch orchestration mode set to Azure Orchestrated (Automatic By Platform). The vms are part of an application `app1` which is load balanced across these vms. It is determined that the patches to the first vm `vmtest01` should be installed once every month , on the next day when Microsoft releases their monthly patches. Microsoft release their monthly patches on the 2nd Tuesday of every month. This day is also known as `Patch Tuesday`.
-
-It is also determined that the patches to the other vm `vmtest02` for the same application ( `app1`) should be installed on the next day from the patch date of the first vm to ensure redundancy.
-
-So I create two Maintenance configuration objects with the schedule set to 2nd Wednesday of every month and 2nd Thursday of every month.
-
-1.  Locate the appropriate files based on the environment and the subscription. As mentioned, our VM are in the Testing subscription in the Dev environment, so I know the files I will need to make changes to are:
-
-	 `terraform/environments/dev/testing/maintenance_config.auto.tfvars` 
-
-2.  The content of the file looks like this:
-
-	 `maintenance_configurations = {
-
-"config_2ndTuesday" = {
-
-name = "config_2ndTuesday"
-
-start_date_time = "2021-08-21 18:00"
-
-recur_every = "1Month Second Tuesday"
-
-reboot_setting = "IfRequired"
-
-virtual_machines = {}
+Or it can be specified as an option when you use the Azure  Landing  Zone  VM  Module [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) to create the vms.
 
   
 
-},
-
-}` 
-
-As can be seen there is a configuration object `config_2ndTuesday`. This can be copied to form the basis of the new config object as per specific requirements.
-
-I can copy the majority of what exists already as the basis for my new entry. I add a new entry to the `maintenance_configurations` object.
-
-In this example I am adding two objects , one for 2nd Wednesday scheule and another for 2nd Thursday schedule. I am keeping the default 2nd Tuesday schedule as is. If required I can remove it as well..
-
-Now the file looks like this:
-
-	 `maintenance_configurations = {
-
-"config_2ndTuesday" = {
-
-name = "config_2ndTuesday"
-
-start_date_time = "2021-08-21 18:00"
-
-recur_every = "1Month Second Tuesday"
-
-reboot_setting = "IfRequired"
-
-virtual_machines = {
+## Quick-Start
 
   
 
-}
+- Clone this repository and create a new branch.
 
-},
+- Make amendments to the relevant files (fully explained below).
 
-  
+- Open a PR against `main`
 
-"config_2ndWednesday" = {
-
-name = "config_2ndWednesday"
-
-start_date_time = "2021-08-21 18:00"
-
-recur_every = "1Month Second Wednesday"
-
-reboot_setting = "IfRequired"
-
-virtual_machines = {
-
-"vmtest01" = {
-
-resource_group_name = "rg-hub-poltest-01"
-
-},
-
-}
-
-},
-
-  
-
-"config_2ndThursday" = {
-
-name = "config_2ndThursday"
-
-start_date_time = "2021-08-21 18:00"
-
-recur_every = "1Month Second Thursday"
-
-reboot_setting = "IfRequired"
-
-virtual_machines = {
-
-"vmtest02" = {
-
-resource_group_name = "rg-hub-poltest-01"
-
-},
-
-}
-
-}
-
-}` 
-
-The virual machines are also added to their respective maintenance configs. Each vm needs its name as the key of the object and its resource group as one of the attributes to uniquely identify the vm.
-
-Breakdown of the `maintenance configurations` variable:
--------------------------------------------------------
-
-| Name | Description | Type | Required |
-| --- | --- | --- | --- |
-| maintenance_configurations | Maintenance configurations. [here](https://learn.microsoft.com/en-us/azure/virtual-machines/maintenance-configurations) | map(object({ name = string start\_date\_time = string expiration\_date\_time = optional(string) duration = optional(string, "02:00") time\_zone = optional(string, "UTC") recur\_every = string reboot\_setting = optional(string, "IfRequired") win\_classifications\_to\_include = optional(list(string), \[ "Critical", "Definition", "FeaturePack", "Security", "ServicePack", "Tools", "UpdateRollup", "Updates" \]) linux\_classifications\_to\_include = optional(list(string), \[ "Critical", "Security", "Other", \]) kb\_numbers\_to\_exclude = optional(list(string)) kb\_numbers\_to\_include = optional(list(string)) package\_names\_mask\_to\_exclude = optional(list(string)) package\_names\_mask\_to\_include = optional(list(string)) virtual\_machines = optional(map(object({ resource\_group\_name = string })),) {}) })) default = {} } | Yes |
-| resource\_group\_name | Resource Group the resources will belong to. | `string` | yes |
+- Wait  for a member of the ALZ team to approve and deploy.
