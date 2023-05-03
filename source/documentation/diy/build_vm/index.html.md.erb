@@ -23,7 +23,7 @@ The module and standard documentation can be found [here](https://github.com/min
 - Optional installation of Antivirus with a VM extension
 - Optionally enable Azure monitor agent for the VM
 - Optional enrollment into Spoke Recovery Services Vault for backups
-- Optional enrollment into ALZ automated patching (Windows)
+- Optional enrollment into ALZ automated patching (Windows) and (Linux)
 - Optionally enable host based encryption - see pre-requisites and considerations before enabling [here](https://learn.microsoft.com/en-us/azure/virtual-machines/disks-enable-host-based-encryption-portal?tabs=azure-powershell)
 
 ## Using the ALZ VM Terraform module
@@ -107,7 +107,9 @@ A single Windows VM with a single NIC and two data disks. An Antivirus extension
       sku                = "2016-Datacenter"
       version            = "latest"
       admin_user         = "azureuser"
-      patch_class        = "Bronze1"
+      patch_mode            = "AutomaticByPlatform"
+      provision_vm_agent    = true
+      patch_assessment_mode = "AutomaticByPlatform"
       scheduled_shutdown = false
       monitor            = false
       backup             = false
@@ -161,6 +163,9 @@ vm_specifications_linux = {
       sku                = "16.04-LTS"
       version            = "latest"
       admin_user         = "azureuser"
+      patch_mode            = "AutomaticByPlatform"
+      provision_vm_agent    = true
+      patch_assessment_mode = "AutomaticByPlatform"
       scheduled_shutdown = false
       monitor            = false
       backup             = false
@@ -203,6 +208,9 @@ vm_specifications_linux = {
         sku                = "16.04-LTS"
         version            = "latest"
         admin_user         = "azureuser"
+        patch_mode            = "AutomaticByPlatform"
+        provision_vm_agent    = true
+        patch_assessment_mode = "AutomaticByPlatform"
         scheduled_shutdown = false
         monitor            = false
         backup             = false
@@ -256,7 +264,9 @@ locals {
       sku                = "2016-Datacenter"
       version            = "latest"
       admin_user         = "azureuser"
-      patch_class        = "Bronze1"
+      patch_mode            = "AutomaticByPlatform"
+      provision_vm_agent    = true
+      patch_assessment_mode = "AutomaticByPlatform"
       license_type       = "Windows_Server"
       scheduled_shutdown = true
       monitor            = true
@@ -321,12 +331,6 @@ locals {
 
 - The `lun` attribute within the `vm_specification` variable is required for each additional disk disk added via the data_disks block. Attribute must be unique for each disk per VM (recommend multiples of 10).
 
-- The `patch_class` attribute within the `vm_specification` variable will be different depending on the environment. Possible values and explanation:
-  - `Bronze1` - Dev -  Patch wave 1
-  - `Bronze2` - Dev - Patch wave 2
-  - `Silver1` - NLE/Preprod - Patch wave 1
-  - `Silver2` - NLE/Preprod - Patch wave 2
-  - `Gold1` - Prod - Patch wave 1
-  - `Gold2` - Prod - Patch wave 2
+- The `patch_mode` attribute within the `vm_specification` variable will need to be set to `AutomaticByPlatform` in order to use the self service patching functionality available via ALZ patching repo [here](https://https://github.com/ministryofjustice/staff-infrastructure-alz-patching)
 
 - Terraform destroy will be unable to remove all of the resources this module creates if `backup = true` is set and a recovery services vault name/group is provided. This is due to the resource lock on all ALZ Recovery Service Vaults to prevent accidental deletion. Removing the backups must be performed manually and outside of Terraform after the destroy has failed. 
