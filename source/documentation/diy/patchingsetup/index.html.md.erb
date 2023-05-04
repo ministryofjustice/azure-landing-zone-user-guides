@@ -21,23 +21,18 @@ Overview of the technology can be found [here](https://learn.microsoft.com/en-us
 
 ## Pre-requisites
 
-  
 
 The  VMS which will be added to the maintenance configurations will need to have their patch orchestration mode set to Azure  Orchestrated (Automatic  By  Platform).
 
-  
 
 This can be done either via portal [here](https://learn.microsoft.com/en-us/azure/update-center/manage-update-settings?tabs=manage-single-overview%2Cmanage-scale-overview)
 
-  
 
 Or it can be specified as an option when you use the Azure  Landing  Zone  VM  Module [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) to create the vms.
 
-  
 
 ## Quick-Start
 
-  
 
 - Clone this repository and create a new branch.
 
@@ -86,22 +81,14 @@ We're gradually expanding this repository to cover more Spokes and environments 
 
 ### Example
 
-
 I have two Windows  VMs  in the Testing subscription in the Development environment namely vmtest01 and vmtest02. These vms already have the patch orchestration mode set to Azure  Orchestrated -Automatic  By  Platform. The vms are part of an application `app1` which is load balanced across these vms. It is determined that the patches to the first vm `vmtest01` should be installed once every month , on the next day when  Microsoft releases their monthly patches. Microsoft release their monthly patches on the 2nd Tuesday of every month. This day is also known as `Patch Tuesday`.
-
-  
 
 It is also determined that the patches to the other vm `vmtest02`  for the same application  `app1` should be installed on the next day from the patch date of the first vm to ensure redundancy.
 
-  
-
 So  I create two Maintenance configuration objects with the schedule set to 2nd Wednesday of every month and 2nd Thursday of every month.
-
-  
 
 1. Locate the appropriate files based on the environment and the subscription. As mentioned, our VM are in the Testing subscription in the Dev environment, so I know the files I will need to make changes to are:
 
-  
 
 ```
 
@@ -228,8 +215,6 @@ resource_group_name = "rg-hub-poltest-01"
 }
 
 ```
-
-  
 
 The virual machines are also added to their respective maintenance configs. Each vm needs its name as the key of the object and its resource group as one of the attributes to uniquely identify the vm.
 
