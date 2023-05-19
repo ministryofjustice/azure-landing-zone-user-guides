@@ -1,0 +1,123 @@
+---
+title: Getting Started Spoke Owners
+last_reviewed_on: 2023-05-19
+review_in: 6 months
+weight: 4000
+---
+
+# Getting Started Spoke Owners
+
+As a spoke owner in the Azure Landing Zone (ALZ), you have the ability to perform self-service actions such as creating subscriptions, managing access, and utilizing available resources to fulfill your responsibilities effectively. This guide aims to provide step-by-step instructions and resources to enable spoke owners to independently manage their subscriptions and access permissions.
+
+## Self-Service Subscription Creation
+
+Subscriptions in ALZ are created under a pre-existing Enterprise Agreement with Microsoft. Once you have obtained the billing account from the MOJ licensing team, you can proceed to login to Azure Portal to create a subscription.
+
+To create your subscription , follow these steps:
+
+1. Refer to [Microsoft documentation on creating an Azure subscription](https://docs.microsoft.com/azure/cost-management-billing/manage/create-subscription).
+
+2. Follow the provided instructions to create your subscription, ensuring you provide the necessary details.
+
+3. By following this process, you as spoke owner will get an automatic assignment of the built-in `Owner` role on the subscription you just created.
+
+## Granting Access to ALZ tools
+
+In order for the ALZ team to use their tooling to create the core resources for your subscription , you need to grant the ALZ devops service principals the required role on your recently created subscription.
+
+The steps are identical in Prod, PreProd and Dev tenants. Follow these steps to do so:
+
+1. Login to [https://portal.azure.com](https://portal.azure.com)  with the ID you used to create subscription.
+
+2. Navigate to the "Subscriptions" blade by selecting "Subscriptions" from the left-hand menu.
+
+3. Select your subscription.
+
+4. In the subscription overview page, select the "Access control (IAM)" tab from the left-hand menu.
+
+5. Click on the "+ Add" button to add a new role assignment.
+
+6. In the "Add role assignment" panel, select the "Owner" role from the "Role" drop-down menu.
+
+7. Under "Members" tab, Specify the ALZ devops service principal. In prod this is `MoJO-PROD-LandingZone-Elevated`, likewise for Devl it is `MoJO-Devl-LandingZone-Elevated`
+
+8. Click on the "Save" button to create the role assignment.
+
+9. The "Owner" role will now be granted to the specified service principal. We can now start spinning up the core resources.
+
+## Granting and removing access to Team members
+
+As a spoke-owner you will delegate the day2 operations to your technical team members. 
+
+The first step is to understand the concepts of Role-Based Access Control (RBAC) in Azure. Refer to [Microsoft's documentation on RBAC](https://docs.microsoft.com/azure/role-based-access-control/overview).
+
+When the ALZ team hands over the spoke to you with core resources, it will come pre-created with Azure Active Directory groups which are assigned various roles on your subscription.
+
+1. Each Spoke will come with the following groups:
+
+| User/Group                              | Builtin Role                   | Custom Role                    | Description                                                                                           |
+| --------------------------------------  | ------------------------------ | ------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Mojo-Azure-SPOKE_Owner                  | Owner                          |                                | Spoke owner with full control over the Azure resources in the spoke.                                  |
+| Mojo-Azure-SPOKE_Contributor            | Contributor                    |                                | Spoke contributor with the ability to manage and modify Azure resources in the spoke.                 |
+| Mojo-Azure-SPOKE_Reader                 | Reader                         |                                | Spoke reader with read-only access to view Azure resources in the spoke.                              |
+| Mojo-Azure-SPOKE_UserAccessAdministrator| User Access Administrator      |                                | User access administrator with the ability to manage user access to Azure resources in the spoke.     |
+| Mojo-Azure-SPOKE_MonitoringReader       | Monitoring Reader              |                                | Monitoring reader with read-only access to view monitoring data in the spoke.                         |
+| Mojo-Azure-SPOKE_MonitoringContributor  | Monitoring Contributor         |                                | Monitoring contributor with the ability to manage monitoring settings and data in the spoke.          |
+| Mojo-Azure-SPOKE_StandardAdministrator  |                                | StandardAdministrator          | Standard administrator with custom role-based access control in the spoke.                            |
+| Mojo-Azure-SPOKE_PrivilegedAdministrator|                                | PrivilegedAdministrator        | Privileged administrator with custom role-based access control in the spoke.                          |
+
+> Note : The first group in the table is Mojo-Azure-SPOKE_Owner of which you are part of. You should `not add` any accounts to this group.
+
+2. You as spoke owner will be the owner of these Azure AD groups. 
+
+3. Once you have determined the appropriate roles and permissions required for your team members in your spoke use the azure portal to add the user accounts to the respective Azure AD group.
+
+4. E.g. to enable someone@justice.gov.uk to view the monitoring dashboard for your spoke, add him/her to the Mojo-Azure-SPOKE_MonitoringReader AAD group for your spoke.
+
+> Note: Exercise caution when adding or removing users from Azure AD groups, especially those groups with elevated permissions or access to sensitive resources. Ensure that the appropriate users are added or removed based on their roles and responsibilities within the Azure subscription.
+
+### Detailed Steps
+
+#### Adding Users
+
+1. Sign in to the Azure portal at [https://portal.azure.com](https://portal.azure.com) with your Azure subscription owner credentials.
+
+2. In the Azure portal, navigate to "Azure Active Directory" by selecting it from the left-hand menu.
+
+3. Under "Azure Active Directory," select "Groups" to view the list of Azure AD groups.
+
+4. Locate the specific group to which you want to add users and click on its name to open the group's details page.
+
+5. In the group details page, select the "Members" tab.
+
+6. Click on the "+ Add members" button to add users to the group.
+
+7. In the "Add members" panel, search for the users you want to add by their name or email address.
+
+8. Select the users from the search results.
+
+9. Click on the "Select" button to add the selected users to the group.
+
+10. Once added, the users will have the assigned permissions and access associated with that Azure AD group.
+
+#### Removing Users
+
+You may need to remove access of your team members if they have left the project or have left the organization.
+
+While MOJ's leavers process will deactivate the account of an individual who has left the organization, you will still need to remove the account from the AAD groups where you have assigned this user as member.
+
+1. Follow steps 1 to 4 above to navigate to the group's details page.
+
+2. In the group details page, select the "Members" tab to view the list of members.
+
+3. Locate the user(s) you want to remove from the group.
+
+4. Click on the ellipsis (...) next to the user's name and select "Remove from group" from the dropdown menu.
+
+5. Confirm the removal by clicking on the "Remove" button in the confirmation dialog box.
+
+6. The user(s) will be removed from the Azure AD group.
+
+
+
+
