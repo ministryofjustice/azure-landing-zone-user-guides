@@ -1,0 +1,61 @@
+---
+title: ALZ deployment tooling
+last_reviewed_on: 2023-06-08
+review_in: 6 months
+weight: 1500
+---
+
+# ALZ Tooling
+
+Azure Landing Zone is intended to be a tool agnostic platform for hosting infrastructure and applications in Azure. As such, there are no technical restrictions on the tooling and deployment methods used by teams that wish to deploy resources to the platform.
+
+In the core ALZ team, we define all of our infrastructure as code and make use of CI/CD tooling to manage our deployments and testing. When we onboard a new Spoke, we also offer some tool provisioning to give teams a helping hand in adoption of similar practices.
+
+The build and deployment tool stack used by the core ALZ team consists of:
+
+- Github  
+  - We store all of our code and configuration here, to provide version control and aid in collaboration between engineers.
+
+- Azure DevOps  
+  - We run all of our deployments from here, automating all of our release processes and providing approval gates for our deployments. It also provides a more managed way to authenticate against our Azure Subscriptions.
+
+- Terraform  
+  - All core ALZ infrastructure is defined using Terraform
+
+
+### Example
+
+This shows roughly how the tools work together to perform a deployment in Azure
+
+![ALZ Tooling High Level](../../../images/alz_tooling.png)
+
+
+
+## What we can help with
+
+### Github
+
+We can provision a repository for your project within the [Ministry of Justice Github Organisation](https://github.com/ministryofjustice). This is built from the MOJ repository template and contains a guide on getting started and configuring your repository in accordance with MOJ best practice.
+
+### Azure DevOps Project
+
+A functional Azure DevOps project consists of multiple components to help manage the lifecycle of a deployment and provide authentication to the Azure Landing Zone environment. We can help with this by configuring the following:
+
+- Environments
+  - Labels that help tie a specific deployment job to a specific set of resources. These will generally correspond to a Subscription in Azure Landing Zone and help provide the structure needed for deployment Approval gates etc... This will almost always consist of at least a `Development` and `Production` environment.
+
+- Service Connections
+  - Provide the necessary authentication for your deployment tools to communicate with Azure Landing Zone. These are created in Azure DevOps so they can be consumed by a task or deployment job and are backed by a Service Principal in Azure scoped only to your Subscription. 
+
+- Pipeline templates 
+  - If you wish to deploy with Terraform, we offer some templated pipeline jobs that will make this easier [here] (https://github.com/ministryofjustice/staff-infrastructure-alz-ci-templates)
+
+
+## Further reading and contacts
+
+- [What is Github and why is it used](https://docs.github.com/en/get-started/quickstart/hello-world)  
+- [MOJ Operations Engineering](https://operations-engineering.service.justice.gov.uk/#moj-operations-engineering) - owners of the MOJ Github organisation in terms of support, user management etc...  
+- [Getting started with Azure Devops](https://learn.microsoft.com/en-us/azure/devops/pipelines/get-started/what-is-azure-pipelines?view=azure-devops)  
+ 
+
+
