@@ -12,23 +12,24 @@ weight: 3400
 
 # ALZ Windows and Linux Virtual Machine patching facility
 
-  
+
 
 This repository contains Terraform code that allows spoke owners to create patch schedules (hereafter referred to as maintenance configurations) to patch their Windows and Linux  Operating  System based Virtual  Machines hosted in  Azure.
 
-This is done via the update management center in  Azure.
-
 Overview of the technology can be found [here](https://learn.microsoft.com/en-us/azure/update-center/scheduled-patching?tabs=schedule-updates-single-overview%2Cschedule-updates-scale-overview).
+
 
 ## Pre-requisites
 
+First and foremost you only need to use the maintenance configurations if you intend to manage the patching. If you intend to leave it to Azure to manage the patching of your vms then just ensure the patch orchestration mode is set to `AutomaticbyPlatform` in the `Update Management Center` blade.
 
-The  VMS which will be added to the maintenance configurations will need to have their patch orchestration mode set to Azure  Orchestrated (Automatic  By  Platform).
+At the moment you can only set the patch orchestration mode via the `Azure Portal` using the `Update Management Center` blade [here](https://learn.microsoft.com/en-us/azure/update-center/manage-update-settings?tabs=manage-single-overview%2Cmanage-scale-overview).
 
-This can be done either via portal [here](https://learn.microsoft.com/en-us/azure/update-center/manage-update-settings?tabs=manage-single-overview%2Cmanage-scale-overview)
+The VMS which will be added to the maintenance configurations will need to have their patch orchestration mode set to `Customer Managed Schedules`.
 
-Or it can be specified as an option when you use the Azure  Landing  Zone  VM  Module [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) to create the vms.
+As a spoke owner you will have access to the Update Center blade in Azure Portal to set this patch mode i.e. `Customer Managed Schedules` for virtual machines in your subscriptions.
 
+Note: If you have used Azure  Landing  Zone  VM  Module [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) to create the vms , the vms are already set to be managed by Azure for automatic patching.
 
 ## Quick-Start
 
@@ -85,7 +86,7 @@ We're gradually expanding this repository to cover more Spokes and environments 
 
 I have two Windows  VMs  in the Testing subscription in the Development environment namely vmtest01 and vmtest02.
 
-These vms already have the patch orchestration mode set to Azure  Orchestrated -Automatic  By  Platform.
+These vms already have the patch orchestration mode set to Customer Managed Schedules.
 
 The vms are part of an application `app1` which is load balanced across these vms.
 
