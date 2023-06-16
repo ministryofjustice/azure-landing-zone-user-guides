@@ -1,6 +1,6 @@
 ---
 
-title: Patching  Set  Up
+title: Patching Set Up
 
 last_reviewed_on: 2023-04-28
 
@@ -14,7 +14,7 @@ weight: 3400
 
 
 
-This repository contains Terraform code that allows spoke owners to create patch schedules (hereafter referred to as maintenance configurations) to patch their Windows and Linux  Operating  System based Virtual  Machines hosted in  Azure.
+The ALZ patch repository [here](https://github.com/ministryofjustice/staff-infrastructure-alz-patching) contains Terraform code that allows spoke owners to create patch schedules (hereafter referred to as maintenance configurations) to patch their Windows and Linux Operating System based Virtual Machines hosted in Azure.
 
 Overview of the technology can be found [here](https://learn.microsoft.com/en-us/azure/update-center/scheduled-patching?tabs=schedule-updates-single-overview%2Cschedule-updates-scale-overview).
 
@@ -29,7 +29,7 @@ The VMS which will be added to the maintenance configurations will need to have 
 
 As a spoke owner you will have access to the Update Center blade in Azure Portal to set this patch mode i.e. `Customer Managed Schedules` for virtual machines in your subscriptions.
 
-Note: If you have used Azure  Landing  Zone  VM  Module [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) to create the vms , the vms are already set to be managed by Azure for automatic patching.
+Note: If you have used Azure Landing Zone VM Module [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) to create the vms , the vms are already set to be managed by Azure for automatic patching.
 
 ## Quick-Start
 
@@ -42,17 +42,17 @@ Note: If you have used Azure  Landing  Zone  VM  Module [here](https://github.co
 
 - Wait  for a member of the ALZ team to approve and deploy.
 
-The  Maintenance setup consists of two elements:
+The Maintenance setup consists of two elements:
 
 - One or more Maintenance (patch) configurations
 
 - Defines the schedule settings e.g. Start time, recurring interval and patch classifications to deploy per application or in any other way as deemed appropriate by spoke owners.
 
-- One or more Virtual  Machines
+- One or more Virtual Machines
 
-- The  Vms are then added to maintenance configurations. 
+- The Vms are then added to maintenance configurations. 
 
-- Both  Windows and Linux  Vms can be added to the same maintenance configuration if they are subjected to the same patch timings.
+- Both Windows and Linux  Vms can be added to the same maintenance configuration if they are subjected to the same patch timings.
 
 ### Add a new Maintenance Configuration
 
@@ -60,9 +60,9 @@ It is recommended to configure the maintenance configurations per MOJ Patch guid
 
 To add a new maintenance configuration , an entry can be added to the appropriate maintenance configuration block in the relevant `maintenance_config.auto.tfvars` file.
 
-Each  ALZ  Spoke/Workload has a dedicated `maintenance_config.auto` per environment.
+Each ALZ Spoke/Workload has a dedicated `maintenance_config.auto` per environment.
 
-As an example, to add a maintenance configuration for a group of virtual machines contained within the EUCS  Production  Subscription, the correct `maintenance_config.auto.tfvars` would be located at `terraform/environments/prod/eucs/maintenance_config.auto.tfvars`. 
+As an example, to add a maintenance configuration for a group of virtual machines contained within the EUCS Production Subscription, the correct `maintenance_config.auto.tfvars` would be located at `terraform/environments/prod/eucs/maintenance_config.auto.tfvars`. 
 
 To add a maintenance configuration for virtual machines located in the Hub subscription in the Development environment, the correct file would be `terraform/environments/dev/hub/maintenance_config.auto.tfvars` etc...
 
@@ -90,13 +90,13 @@ These vms already have the patch orchestration mode set to Customer Managed Sche
 
 The vms are part of an application `app1` which is load balanced across these vms.
 
-It is determined that the patches to the first vm `vmtest01` should be installed once every month , on the next day when  Microsoft releases their monthly patches. 
+It is determined that the patches to the first vm `vmtest01` should be installed once every month , on the next day when Microsoft releases their monthly patches. 
 
 Microsoft release their monthly patches on the 2nd Tuesday of every month. This day is also known as `Patch Tuesday`.
 
 It is also determined that the patches to the other vm `vmtest02`  for the same application  `app1` should be installed on the next day from the patch date of the first vm to ensure redundancy.
 
-So  I create two Maintenance configuration objects with the schedule set to 2nd Wednesday of every month and 2nd Thursday of every month.
+So I create two Maintenance configuration objects with the schedule set to 2nd Wednesday of every month and 2nd Thursday of every month.
 
 1. Locate the appropriate files based on the environment and the subscription. As mentioned, our VM are in the Testing subscription in the Dev environment, so I know the files I will need to make changes to are:
 
