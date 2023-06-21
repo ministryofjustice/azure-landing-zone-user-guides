@@ -52,6 +52,7 @@ module "linux_vm_tests" {
     recovery_vault_resource_group               = "rg-alz-vm-test-001"
     data_collection_rule_monitor_name           = "dcr-alz-vm-test-ama-001"
     data_collection_rule_monitor_resource_group = "rg-azmon-test-001"
+    log_analytics_workspace_name                = "log-alz-test-001"
   }
 ```
 **Windows**
@@ -69,6 +70,7 @@ module "linux_vm_tests" {
     recovery_vault_resource_group                = "rg-alz-vm-test-001"
     data_collection_rule_monitor_name            = "dcr-alz-vm-test-ama-001"
     data_collection_rule_monitor_resource_group  = "rg-alz-vm-test-001"
+    log_analytics_workspace_name                 = "log-alz-test-001"
     
   }
 ```
@@ -85,6 +87,7 @@ Further details can be found in the source repository readmes.
 | `keyvault_name` `keyvault_rg`                                                     | Generated user account credentials are pushed here|
 | `recovery_vault_name`, `recovery_vault_resource_group`                            | Optional. However, you must specify these if backup is enabled in the `vm_specifications` variable|
 | `data_collection_rule_monitor_name`,`data_collection_rule_monitor_resource_group` | Optional. However, you must specify these if monitor is enabled in the `vm_specifications` variable|
+| `log_analytics_workspace_name`                                                    | Optional. However, you must specify these if monitor is enabled in the `vm_specifications` variable|
 | `vm_specifications`                                                               | Configuration parameters for one or more VM's, see below for usage examples|
 
 All ALZ Spokes are built with a Keyvault, Storage Account for Boot diagnostics, Recovery Services Vault for backups and a Data Collection Rule for use with Azure Monitor as standard, generally these would be the resources used when populating the variables.
@@ -308,6 +311,7 @@ locals {
     keyvault_rg                                 = "rg-alz-vm-test-001"
     data_collection_rule_monitor_name           = "dcr-alz-vm-test-ama-001"
     data_collection_rule_monitor_resource_group = "rg-alz-vm-test-001"
+    log_analytics_workspace_name                = "log-alz-test-001"
   }
 
   output "nic_ids" {
