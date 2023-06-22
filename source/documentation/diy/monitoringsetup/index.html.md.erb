@@ -22,6 +22,14 @@ Here we'll walk through a common use-case where one or more Virtual Machines nee
 
 During the installation process, you will be asked to create a Data Collection Rule. At this point, rather then creating a new one, you should use the existing Data Collection Rule that already exists in your Spoke. It's deployed as standard to all Spokes and is called `MSVMI-azure-monitor-agent`. Associating your Azure Monitor Agent install to this Data Collection Rule ensures that the logs it generated will be sent to the correct Log Analytics Workspace.
 
+
+### OPTIONAL: Install the MMA
+2.) Due to some issues with the current release of the Azure Monitor Agent (AMA), if you want to have the capability to monitor Windows services, registry keys or files, then you'll also need to install the Microsoft Monitoring Agent (MMA) extension on your VM alongside the AMA. If you're using the VM module, this will be handled for you when you just set `monitor = true` in the same way you would for the AMA installation as noted above.
+
+If you're building a VM any other way, please see [this documentation](https://learn.microsoft.com/en-us/azure/virtual-machines/extensions/oms-windows)
+
+Once installed, navigate to the VM in the portal and select the `Change Tracking` blade from the left hand side, under the `Operations` Menu. Click "Enable".
+
 ### Visualise the logs in a Dashboard
 
 1.) Navigate to the [Azure Workbooks](https://portal.azure.com/#view/HubsExtension/BrowseResource/resourceType/microsoft.insights%2Fworkbooks) blade in the portal and locate the VM monitoring workbook for your Spoke. These workbooks are available to users who have reader writes on the Spoke subscription. The naming convention is as follows: 
