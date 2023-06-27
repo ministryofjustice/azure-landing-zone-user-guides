@@ -44,8 +44,6 @@ expired_articles = {}
 # Add it to the dictionary if it needs a revision
 for article in article_expirations:
    if datetime.strptime(article_expirations[article], '%Y-%m-%d').date() < datetime.today().date():
-    #print("EXPIRED " + "- " + article)
-    #print(article_expirations[article])
     expired_articles[article] = article_expirations[article]
 
 
