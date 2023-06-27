@@ -3,7 +3,7 @@ name: Doc expiry checker
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 10 * * 1' # At 10:00 on Monday
+    - cron: '30 09 * * 2' # At 09:30 on Tuesday
 
 jobs:
   doc-expiry-py:
