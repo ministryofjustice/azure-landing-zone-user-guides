@@ -1,0 +1,29 @@
+name: Doc expiry checker
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 09 * * 2' # At 09:30 on Tuesday
+
+jobs:
+  doc-expiry-py:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Python3 Setup
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          pip install -r scripts/requirements.txt
+      
+      - name: Run scrape script
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.ALZ_NOTIFICATION_WEBHOOK }}
+        run : |
+          python scripts/expiry-scrape.py
+
+
