@@ -315,7 +315,7 @@ locals {
   }
 
   output "nic_ids" {
-    value = module.linux_vm.nics
+    value = module.windows_vm_tests.nics
   }
 
   resource "azurerm_network_interface_backend_address_pool_association" "windows_app" {
