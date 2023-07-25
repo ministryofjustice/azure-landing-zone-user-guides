@@ -94,9 +94,11 @@ headers = {"Content-Type": "application/json"}
 
 # Get URL from env (mapped by Github action)
 webhook_url = os.environ["TEAMS_WEBHOOK_URL"]
-response = requests.post(webhook_url, headers=headers, data=card_json)
-
-if response.status_code == 200:
-  print("Card sent successfully!")
-else:
-  print("Error sending card: " + str(response.status_code))
+if expired_articles :
+  response = requests.post(webhook_url, headers=headers, data=card_json)
+  if response.status_code == 200:
+    print("Card sent successfully!")
+  else:
+    print("Error sending card: " + str(response.status_code))
+else: 
+  print("No expired articles detected, no message to send!")
