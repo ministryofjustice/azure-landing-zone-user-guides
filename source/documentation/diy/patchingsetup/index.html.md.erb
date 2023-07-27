@@ -18,63 +18,50 @@ The ALZ patch repository [here](https://github.com/ministryofjustice/staff-infra
 
 Overview of the technology can be found [here](https://learn.microsoft.com/en-us/azure/update-center/scheduled-patching?tabs=schedule-updates-single-overview%2Cschedule-updates-scale-overview).
 
+<%= warning_text('Only follow the process below if you want control over your update scheduling. To let Azure manage the patching of your VMs then just ensure the patch orchestration mode is set to `Azure Managed - Safe Deployment` in the `Update Management Center` blade. If this is set, you can stop right here, your updates are being scheduled and controlled by the Azure platform and do not need further configuration.') %>
 
 ## Pre-requisites
 
-First and foremost you only need to use the maintenance configurations if you intend to manage the patching. If you intend to leave it to Azure to manage the patching of your vms then just ensure the patch orchestration mode is set to `AutomaticbyPlatform` in the `Update Management Center` blade.
+The VMs to be added to the maintenance configurations will need to have their patch orchestration mode set to `Customer Managed Schedules`. As a spoke owner you will have access to the `Update Management Center` blade in Azure Portal to set this patch mode for VMs in your Spoke.
 
-At the moment you can only set the patch orchestration mode via the `Azure Portal` using the `Update Management Center` blade [here](https://learn.microsoft.com/en-us/azure/update-center/manage-update-settings?tabs=manage-single-overview%2Cmanage-scale-overview).
+<%= warning_text('If you do not configure this, the maintenance configurations you define will have no effect') %>
 
-The VMS which will be added to the maintenance configurations will need to have their patch orchestration mode set to `Customer Managed Schedules`.
-
-As a spoke owner you will have access to the Update Center blade in Azure Portal to set this patch mode i.e. `Customer Managed Schedules` for virtual machines in your subscriptions.
-
-Note: If you have used Azure Landing Zone VM Module [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) to create the vms , the vms are already set to be managed by Azure for automatic patching.
+Also note, If you have used Azure Landing Zone VM Module [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm) to create the VMs, they are set to be `Azure Managed - Safe Deployment` for automatic patching.
 
 ## Quick-Start
 
 
 - Clone this repository and create a new branch.
-
 - Make amendments to the relevant files (fully explained below).
-
 - Open a PR against `main`
-
 - Wait  for a member of the ALZ team to approve and deploy.
 
 The Maintenance setup consists of two elements:
 
 - One or more Maintenance (patch) configurations
-
-- Defines the schedule settings e.g. Start time, recurring interval and patch classifications to deploy per application or in any other way as deemed appropriate by spoke owners.
-
+    - Defines the schedule settings e.g. Start time, recurring interval and patch classifications to deploy per application or in any other way as deemed appropriate by spoke owners.
 - One or more Virtual Machines
-
-- The Vms are then added to maintenance configurations. 
-
-- Both Windows and Linux  Vms can be added to the same maintenance configuration if they are subjected to the same patch timings.
+    - The VMs to apply the defined schedule to!
+        - Both Windows and Linux  Vms can be added to the same maintenance configuration if they are subjected to the same patch timings.
 
 ### Add a new Maintenance Configuration
 
 It is recommended to configure the maintenance configurations per MOJ Patch guidelines laid out  [here](https://security-guidance.service.justice.gov.uk/patch-management-guide).
 
-To add a new maintenance configuration , an entry can be added to the appropriate maintenance configuration block in the relevant `maintenance_config.auto.tfvars` file.
+To add a new maintenance configuration, an entry can be added to the appropriate maintenance configuration block in the relevant `maintenance_config.auto.tfvars` file.
 
-Each ALZ Spoke/Workload has a dedicated `maintenance_config.auto` per environment.
+Each ALZ Spoke/Workload has a dedicated `maintenance_config.auto.tfvars` per environment.
 
 As an example, to add a maintenance configuration for a group of virtual machines contained within the EUCS Production Subscription, the correct `maintenance_config.auto.tfvars` would be located at `terraform/environments/prod/eucs/maintenance_config.auto.tfvars`. 
 
-To add a maintenance configuration for virtual machines located in the Hub subscription in the Development environment, the correct file would be `terraform/environments/dev/hub/maintenance_config.auto.tfvars` etc...
+To add a maintenance configuration for virtual machines located in the Hub subscription in the Development environment, the correct file would be `terraform/environments/dev/hub/maintenance_config.auto.tfvars`.
 
-The maintenance configuration object contains several configurable settings which range from being able to choose the reboot setting , picking the patch dates to even been able to pick and choose patch types i.e. critical , security or just definition patches.
+The maintenance configuration object contains several configurable settings - changing reboot setting, picking the patch dates, choosing patch types i.e. critical , security etc...
+
 
 ### Add virtual machines to the Maintenance Configuration
 
-The  next step is to enroll/Add the virtual machines into appropriate maintenance configurations.
-
-This will enforce a patch schedule and other settings on the virtual machines which are added.
-
-We can add one or more virutal machines. To  do the same , edit the relevant `maintenance_config.auto.tfvars` file. The virtual machines are nested inside the maintenance configuration thereby linking the two. 
+The  next step is to add the virtual machines into the appropriate maintenance configurations. This will associate the VM's to the maintenance configuration. We can add one or more virutal machines by editing the relevant `maintenance_config.auto.tfvars` file. The virtual machines are nested inside the maintenance configuration thereby linking the two. 
   
 As an example, to add the virtual machines of EUCS  Production  Subscription, the correct `maintenance_config.auto.tfvars` would be located at `terraform/environments/prod/eucs/maintenance_config.auto.tfvars`.
 
@@ -110,26 +97,16 @@ terraform/environments/dev/testing/maintenance_config.auto.tfvars
 
 
 ```
-
 maintenance_configurations = {
-
-"config_2ndTuesday" = {
-
-name = "config_2ndTuesday"
-
-start_date_time = "2021-08-21 18:00"
-
-recur_every = "1Month Second Tuesday"
-
-reboot_setting = "IfRequired"
-
-virtual_machines = {}
-
-},
-
+    "config_2ndTuesday" = {
+        name = "config_2ndTuesday"
+        start_date_time = "2021-08-21 18:00"
+        recur_every = "1Month Second Tuesday"
+        reboot_setting = "IfRequired"
+        virtual_machines = {}
+    },
 }
  
-
 ```
 
 As can be seen there is a configuration object `config_2ndTuesday`. This can be copied to form the basis of the new config object as per specific requirements.
@@ -141,69 +118,38 @@ In this example I am adding two objects , one for 2nd Wednesday scheule and anot
 Now the file looks like this:
 
 ```
-
 maintenance_configurations = {
+    "config_2ndTuesday" = {
+        name = "config_2ndTuesday"
+        start_date_time = "2021-08-21 18:00"
+        recur_every = "1Month Second Tuesday"
+        reboot_setting = "IfRequired"
+        virtual_machines = {}
+    },
 
-"config_2ndTuesday" = {
+    "config_2ndWednesday" = {
+        name = "config_2ndWednesday"
+        start_date_time = "2021-08-21 18:00"
+        recur_every = "1Month Second Wednesday"
+        reboot_setting = "IfRequired"
+        virtual_machines = {
+            "vmtest01" = {
+                resource_group_name = "rg-hub-poltest-01"
+            },
+        }
+    },
 
-name = "config_2ndTuesday"
-
-start_date_time = "2021-08-21 18:00"
-
-recur_every = "1Month Second Tuesday"
-
-reboot_setting = "IfRequired"
-
-virtual_machines = {
-
-}
-
-},
-
-"config_2ndWednesday" = {
-
-name = "config_2ndWednesday"
-
-start_date_time = "2021-08-21 18:00"
-
-recur_every = "1Month Second Wednesday"
-
-reboot_setting = "IfRequired"
-
-virtual_machines = {
-
-"vmtest01" = {
-
-resource_group_name = "rg-hub-poltest-01"
-
-},
-
-}
-
-},
-
-"config_2ndThursday" = {
-
-name = "config_2ndThursday"
-
-start_date_time = "2021-08-21 18:00"
-
-recur_every = "1Month Second Thursday"
-
-reboot_setting = "IfRequired"
-
-virtual_machines = {
-
-"vmtest02" = {
-
-resource_group_name = "rg-hub-poltest-01"
-
-},
-
-}
-
-}
-
+    "config_2ndThursday" = {
+        name = "config_2ndThursday"
+        start_date_time = "2021-08-21 18:00"
+        recur_every = "1Month Second Thursday"
+        reboot_setting = "IfRequired"
+        virtual_machines = {
+            "vmtest02" = {
+                resource_group_name = "rg-hub-poltest-01"
+            },
+        }
+    }
 }
 
 ```
