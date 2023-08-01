@@ -83,11 +83,13 @@ Tags are our primary means of identifying the owner and purpose of each resource
 
 
 
-### 7. Network Address Spaces
+### 7. Network Requirements
 
-Details on the address spaces you require for your core VNET and Subnets within it. This should be ununsed network space reserved in IPAM.
+Details on the size of the address space you require for the core VNET in the Spoke (We will allocate a specific address space based on your requirements). Also any additional architectural requirement for particular subnetting etc...
 
 ##### Example
+
+- You require a /24 split into 2 separate /25 subnets. Your Spoke would be supplied with the configuration:
 
 | Resource           | Address space |
 |--------------------|---------------|
