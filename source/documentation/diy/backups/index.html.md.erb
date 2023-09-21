@@ -1,0 +1,99 @@
+---
+
+title: Backups
+
+last_reviewed_on: 2023-09-23
+
+review_in: 6 months
+
+weight: 3500
+
+---
+
+# ALZ Windows and Linux Virtual Machine backup facility
+
+The ALZ patch repository [here](https://github.com/ministryofjustice/staff-infrastructure-alz-backup) contains Terraform code for backing up virtual machines. The Terraform code in this repository creates backup policies in a specified Recovery Services vault and associates them with existing VMs. Each VM can be in a different resource group, and each VM can have its own backup policy. The backup policies are created separately and can be reused for multiple VMs.
+
+## Pre-requisites
+
+This configuration is intended for managing backups for existing VMs. The VMs and the Recovery Services vault should already exist in Azure.
+
+## Quick-Start
+
+- Clone this repository and create a new branch.
+- Make amendments to the relevant files (fully explained below).
+- Open a PR against `main`
+- Wait  for a member of the ALZ team to approve and deploy.
+
+## Usage
+
+The configuration uses several input variables to customize the backup policies and VMs.
+Users can specify the details of their VMs and backup policies in a the auto.tfvars files.
+
+- `backup-policies.auto.tfvars`: This contains `backup_policies` which is a list of backup policies. Each item in the list is an object that specifies backup policy.
+
+- `vm-backup-config.auto.tfvars`: This contains `vms` which is a A map where each key is a VM name, and each value is an object containing the resource group name and the backup policy name for that VM.
+
+- `vault_resource_group_name`: The name of the resource group where the Recovery Services vault and backup policies are located.
+
+- `vault_name`: The name of the Recovery Services vault.
+
+## Core Files
+
+This repository includes the following files:
+
+`variables.tf`: Contains the declaration of variables used in the configuration.
+`data.tf`: Contains data blocks to fetch information about existing resources, such as the Recovery Services vault and VMs.
+`main.tf`: Contains the resource blocks to create the backup policies and associate them with VMs.
+`versions.tf`: Contains the provider configuration.
+
+## Full Usage
+
+### Summary
+
+## Configuration Files
+
+There are two primary tfvars files that are used to drive the configurations:
+
+- Backup Configuration (backup-policies.auto.tfvars): This file is responsible for defining the backup policies.
+- VM Assignment (vm-backup-config.auto.tfvars): This file assigns specific backup policies to the desired virtual machines.
+
+### Attribute Breakdown
+
+### Backup Configuration (backup-policies.auto.tfvars)
+
+This file defines the backup policies. Here's a brief overview of its attributes:
+
+- `vault_resource_group_name`: The name of the resource group where the Recovery Services Vault resides.
+- `vault_name`: The name of the Recovery Services Vault.
+- `backup_policies`: A list of backup policies, where each policy can have attributes like name, frequency, retention days, etc.
+
+- `Sample`
+
+```
+   vault_resource_group_name = "rg-hub-core-001"
+   vault_name                = "rsv-hub-core-001"
+   backup_policies = [...]
+```
+
+### VM Assignment ( vm-backup-config.auto.tfvars)
+
+This file assigns the backup policies defined in the backup-policies.auto.tfvars to specific virtual machines. The attributes include
+
+- `vms` : A map of virtual machines, where each VM can be associated with a specific backup policy.
+
+- `Sample`
+
+```
+vms = {
+  vm1 = {
+    resource_group = "rg-hub-poltest-01"
+    backup_policy  = "Policy-12-month-retention"
+  }
+  ...
+}
+```
+
+## Monitoring and Alerting for Backups
+
+Monitoring and alerting for backup jobs is accomplished via Azure Monitor. The Azure Landing Zone alerting repo found at [ALZ alerting repo](https://github.com/ministryofjustice/staff-infrastructure-alz-monitor-alerts) has two sample backup alerts in the [Dev testing](https://github.com/ministryofjustice/staff-infrastructure-alz-monitor-alerts/tree/main/terraform/environments/dev/testing) folder. Update the parameters in the backup alerts section of `custom-query-rules.auto.tfvars` file to configure alerts for your backup jobs.
