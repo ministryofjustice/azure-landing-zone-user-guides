@@ -17,7 +17,7 @@ This configuration is intended for managing backups for existing VMs. The VMs an
 
 This repository creates an Enhanced Backup Policy type. As of the last update from Microsoft, if you have a VM that is protected using a Standard (legacy) backup policy, then it is not possible to change to an Enhanced Policy type seamlessly. The backups of a VM with pre-existing standard backups will need to be deleted, and then the VM can be assigned with the Enhanced backup policy type.
 
-Using the Enhanced backup policy type has many advantages over the Standard policy type, namely support for Ultra SSD and Premium Disks, as well as the Trusted VM lock feature.
+Using the Enhanced backup policy type has many advantages over the Standard policy type, namely support for newer Azure offerings, such as Trusted Launch VM, Ultra SSD, Premium SSD v2, Shared disk, and Confidential Azure VMs.
 
 It is thus recommended to use this repository to create a backup policy for any new virtual machines that need protection.
 
