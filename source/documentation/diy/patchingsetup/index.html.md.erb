@@ -2,7 +2,7 @@
 
 title: Patching Set Up
 
-last_reviewed_on: 2023-04-28
+last_reviewed_on: 2023-11-23
 
 review_in: 6 months
 
@@ -18,11 +18,11 @@ The ALZ patch repository [here](https://github.com/ministryofjustice/staff-infra
 
 Overview of the technology can be found [here](https://learn.microsoft.com/en-us/azure/update-center/scheduled-patching?tabs=schedule-updates-single-overview%2Cschedule-updates-scale-overview).
 
-<%= warning_text('Only follow the process below if you want control over your update scheduling. To let Azure manage the patching of your VMs then just ensure the patch orchestration mode is set to `Azure Managed - Safe Deployment` in the `Update Management Center` blade. If this is set, you can stop right here, your updates are being scheduled and controlled by the Azure platform and do not need further configuration.') %>
+<%= warning_text('Only follow the process below if you want control over your update scheduling. To let Azure manage the patching of your VMs then just ensure the patch orchestration mode is set to `Azure Managed - Safe Deployment` in the `Azure Update Manager` blade. If this is set, you can stop right here, your updates are being scheduled and controlled by the Azure platform and do not need further configuration.') %>
 
 ## Pre-requisites
 
-The VMs to be added to the maintenance configurations will need to have their patch orchestration mode set to `Customer Managed Schedules`. As a spoke owner you will have access to the `Update Management Center` blade in Azure Portal to set this patch mode for VMs in your Spoke.
+The VMs to be added to the maintenance configurations will need to have their patch orchestration mode set to `Customer Managed Schedules`. As a spoke owner you will have access to the `Azure Update Manager` blade in Azure Portal to set this patch mode for VMs in your Spoke.
 
 <%= warning_text('If you do not configure this, the maintenance configurations you define will have no effect') %>
 
@@ -166,6 +166,6 @@ The virual machines are also added to their respective maintenance configs. Each
 
 ## Reporting and Observability
 
-The Azure Update Management Centre logs events and statuses using Azure Resource Graph. Microsoft supply a Workbook that is pre-loaded with useful queries relating to Update Management Centre. This can be used as-is, or further customised.
+The Azure Update Manager logs events and statuses using Azure Resource Graph. Microsoft supply a Workbook that is pre-loaded with useful queries relating to Azure Update Manager. This can be used as-is, or further customised.
 
-To find this workbook initiall, navigate to the [Update Management Centre monitoring blade](https://portal.azure.com/#view/Microsoft_Azure_Automation/UpdateCenterMenuBlade/~/workbooks) and select the workbook template named `Overview`. Populate the drop-down boxes at the top of the Workbook as appropriate. To save your drop-down selections and make your own copy of this Workbook for future reference, you can click the `Edit` pencil icon and select `Save As`, providing a name and Resource Group to save the Workbook in. Going forwards, you can access your saved copy of the workbook, make further customisations, share it with others etc...
+To find this workbook, navigate to the [Azure Update Manager monitoring blade](https://portal.azure.com/#view/Microsoft_Azure_Automation/UpdateCenterMenuBlade/~/workbook and select the workbook template named `Overview`. Populate the drop-down boxes at the top of the Workbook as appropriate. To save your drop-down selections and make your own copy of this Workbook for future reference, you can click the `Edit` pencil icon and select `Save As`, providing a name and Resource Group to save the Workbook in. Going forwards, you can access your saved copy of the workbook, make further customisations, share it with others etc...
