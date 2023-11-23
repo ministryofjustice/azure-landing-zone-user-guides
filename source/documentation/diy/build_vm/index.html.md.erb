@@ -1,6 +1,6 @@
 ---
 title: VM Creation Module
-last_reviewed_on: 2023-10-01
+last_reviewed_on: 2023-11-23
 review_in: 6 months
 weight: 3100
 ---
@@ -35,13 +35,13 @@ Supported Terraform and Provider versions are maintained in the source repositor
 
 ### Usage
 
-The module can be called in your code [directly from Github](https://www.terraform.io/language/modules/sources#github). It is recommended to pin the module to a specific version to avoid breaking changes in your code as the module is developed. In the example below we're using v1.0. Releases can be tracked [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/releases).
+The module can be called in your code [directly from Github](https://www.terraform.io/language/modules/sources#github). It is recommended to pin the module to a specific version to avoid breaking changes in your code as the module is developed. In the example below we're using v2.0.0 and Releases can be tracked [here](https://github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/releases).
 
 **Linux**
 
 ```
 module "linux_vm_tests" {
-    source                                      = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v1.1/alz-linux-vm"
+    source                                      = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v2.0.0/alz-linux-vm"
     resource_group                              = "rg-alz-vm-test-001"
     vm_specifications                           = local.vm_specifications_linux
     storage_account_boot_diag_name              = "stalzvmtest7272"
@@ -59,7 +59,7 @@ module "linux_vm_tests" {
 
 ```  
   module "windows_vm_tests" {
-    source                                       = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v1.1/alz-win-vm"
+    source                                       = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v2.0.0/alz-win-vm"
     resource_group                               = "rg-alz-vm-test-001"
     vm_specifications                            = local.vm_specifications_win
     storage_account_boot_diag_name               = "stalzvmtest7272"
@@ -143,8 +143,9 @@ A single Windows VM with a single NIC and two data disks. An Antivirus extension
       }
 
       tags = {
-        application = "windows_app"
-        owner       = "alz"
+        application  = "windows_app"
+        businessunit = "hq"
+        owner        = "alz"
       }
     }
   }
@@ -198,8 +199,9 @@ vm_specifications_linux = {
       }
 
       tags = {
-        application = "linux_app"
-        owner       = "alz"
+        application  = "linux_app"
+        businessunit = "hq"
+        owner        = "alz"
       }
     }
 
@@ -243,8 +245,9 @@ vm_specifications_linux = {
         }
   
         tags = {
-          application = "linux_app"
-          owner       = "alz"
+          application  = "linux_app"
+          businessunit = "hq"
+          owner        = "alz"
         }
       }
   }
@@ -294,15 +297,16 @@ locals {
       }
 
       tags = {
-        application = "windows_app"
-        owner       = "alz"
+        application  = "windows_app"
+        businessunit = "hq"
+        owner        = "alz"
       }
     }
   }
 
 
   module "windows_vm_tests" {
-    source                                      = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm/alz-win-vm?ref=v1.0"
+    source                                      = "github.com/ministryofjustice/staff-infrastructure-alz-terraform-vm.git?ref=v2.0.0/alz-win-vm"
     resource_group                              = "rg-alz-vm-test-001"
     vm_specifications                           = local.vm_specifications_win
     storage_account_boot_diag_name              = "stalzvmtest7272"

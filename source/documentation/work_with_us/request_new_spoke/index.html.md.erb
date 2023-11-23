@@ -1,6 +1,6 @@
 ---
 title: Requesting a new Spoke
-last_reviewed_on: 2023-07-11
+last_reviewed_on: 2023-11-23
 review_in: 6 months
 weight: 2200
 ---
@@ -18,7 +18,7 @@ When requesting a brand new spoke, or expanding an existing spoke with an additi
 
 ### 1. Subscription
 
-Have you already provisioned an Azure Subscription or would you like one to be created for you? If providing your own subscription, we'll need the correct RBAC assignments for our deployment tool service principals before we can start.
+Have you already provisioned an Azure Subscription or would you like one to be created for you? If providing your own subscription, please provide the Subscription Name and Subscription ID and we'll need the correct RBAC assignments for our deployment tool service principals before we can start.
 
 ### 2. Spoke Owners
 
@@ -41,7 +41,7 @@ UK South or UK West
 
 ### 4. Spoke or Workload identifier
 
-A unique string that identifies the functionality hosted in the new spoke. Could be a specific application or project name. We define and build new spokes using IaC and this value is used to determine the name of a number of resources.
+A unique short string that identifies the functionality hosted in the new spoke. Could be a specific application or project name. We define and build new spokes using IaC and this value is used to determine the name of a number of resources.
 
 ##### Example
 
@@ -78,7 +78,7 @@ Tags are our primary means of identifying the owner and purpose of each resource
 | Mandatory Tags     |
 |--------------------|
 | application        |
-| business_area      |
+| businessunit       |
 | owner              |
 
 

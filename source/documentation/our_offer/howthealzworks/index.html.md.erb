@@ -1,6 +1,6 @@
 ---
 title: How the ALZ works
-last_reviewed_on: 2023-07-11
+last_reviewed_on: 2023-11-23
 review_in: 6 months
 weight: 1100
 ---
@@ -37,7 +37,7 @@ A list of the main resources that are deployed in a typical ALZ Workload:
 
 An Azure service used for secure storage and management of Secrets, Keys or Certificates. This is utilized by the ALZ Virtual Machine Terraform module to store automatically created server credentials. Costs for Keyvault are based on usage and will be almost zero unless utilized further by Spoke owners. 
 
-####Log Analytics Workspace 
+#####Log Analytics Workspace 
 
 An Azure service used to store and query logs. It is deployed with a PAYG configuration as standard where costs are dependent on the amount of data ingested. By default, ALZ Workloads push a small amount of data into this workspace (less than 1MB per day typically). 
 
