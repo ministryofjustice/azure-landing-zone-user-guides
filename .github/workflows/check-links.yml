@@ -6,11 +6,16 @@ on:
     types: [opened, edited, reopened, synchronize]
 
 jobs:
-  check_links:
+  linkChecker:
     runs-on: ubuntu-latest
-    container:
-      image: ministryofjustice/tech-docs-github-pages-publisher:v3
     steps:
-    - uses: actions/checkout@v4
-    - name: htmlproofer
-      run: /scripts/check-url-links.sh
+      - uses: actions/checkout@v4
+
+      - name: Link Checker
+        id: lychee
+        uses: lycheeverse/lychee-action@v1.8.0
+        with:
+          args: --verbose --exclude-mail --no-progress './**/*.md' './**/*.html' './**/*.erb' --accept 403,200,429
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          
