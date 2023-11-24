@@ -1,0 +1,43 @@
+name: Build gh-pages
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ministryofjustice/tech-docs-github-pages-publisher:v3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Compile Markdown to HTML and create artifact
+        run: |
+          /scripts/deploy.sh
+      - name: Upload artifact to be URL checked
+        uses: actions/upload-artifact@v3
+        with:
+          name: github-pages-test
+          path: artifact.tar
+          retention-days: 1
+
+  url-check:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download a Build Artifact from build
+        uses: actions/download-artifact@v3
+        with:
+          name: github-pages-test
+          path: github-pages-test
+      - name: Unpack files and check URL links
+        run: |
+          cd github-pages-test
+          tar -xvf artifact.tar
+          npm install linkinator
+          npx linkinator . --recurse --markdown \
+            --skip https://groups.google.com/* \
+            --skip https://github.com/ministryofjustice/* \
+          # "URL Check will fail on private and internal GitHub repositories"
