@@ -46,6 +46,7 @@ Pre-requisites:
 - An Azure AD Account that has the following RBAC permissions:
     - Reader role on the virtual machine.
     - Reader role on the NIC with private IP of the virtual machine.
+    - Reader role on the Virtual Network that the NIC is connected to.
     - Reader role on the Azure Bastion resource.
 
 
@@ -58,6 +59,7 @@ Pre-requisites:
 - An Azure AD Account that has the following RBAC permissions:
     - Either Virtual Machine Administrator Login or Virtual Machine User Login role on the virtual machine
     - Reader role on the NIC with private IP of the virtual machine.
+    - Reader role on the Virtual Network that the NIC is connected to.
     - Reader role on the Azure Bastion resource.
 
 
@@ -70,6 +72,7 @@ Pre-requisites:
 - An Azure AD Account that has the following RBAC permissions:
     - Reader role on the virtual machine.
     - Reader role on the NIC with private IP of the virtual machine.
+    - Reader role on the Virtual Network that the NIC is connected to.
     - Reader role on the Azure Bastion resource.
 - The VM is joined to a domain
 
@@ -80,3 +83,5 @@ Pre-requisites:
 
 - We've found this Windows GPO to cause issues with the file transfer if set to "enabled": 
     - `Computer Configuration \ Administrative Templates \ Windows Components \ Remote Desktop Services \ Remote Desktop Session Hosts \ Device and Resource Redirection \ Do not allow clipboard redirection`
+
+- Reader role on the Virtual Network has been added due to an edge case where a VM and it's NIC existed in a different Resource Group to the Virtual Network.  The Reader role could also be granted on the Resource Group that contained the Virtual Network.
