@@ -1,6 +1,6 @@
 ---
 title: Requesting a new Spoke
-last_reviewed_on: 2024-04-30
+last_reviewed_on: 2024-09-05
 review_in: 6 months
 weight: 2200
 ---
@@ -16,11 +16,15 @@ When requesting a brand new spoke, or expanding an existing spoke with an additi
 
 ## Checklist
 
-### 1. Subscription
+### 1. High-Level Design Architecture diagram
+
+All new users requesting access to a spoke must collaborate with our ALZ team and provide a High-Level Design (HLD) architectural document. This document should outline the overall architecture and design of the requested spoke. This ensures that your resources are correctly configured and align with the overall Azure Landing Zone (ALZ) architecture.
+
+### 2. Subscription
 
 Have you already provisioned an Azure Subscription or would you like one to be created for you? If providing your own subscription, please provide the Subscription Name and Subscription ID and we'll need the correct RBAC assignments for our deployment tool service principals before we can start.
 
-### 2. Spoke Owners
+### 3. Spoke Owners
 
 Two user accounts that are ultimately responsible for this Spoke. These accounts will be given the ability to manage RBAC across the Spoke or Workload
 
@@ -31,7 +35,7 @@ someone@justice.gov.uk
 someone_else@justice.gov.uk
 ```
 
-### 3. Location
+### 4. Location
 
 The region that Spoke resources will be created in.
 
@@ -39,7 +43,7 @@ The region that Spoke resources will be created in.
 
 UK South or UK West
 
-### 4. Spoke or Workload identifier
+### 5. Spoke or Workload identifier
 
 A unique short string that identifies the functionality hosted in the new spoke. Could be a specific application or project name. We define and build new spokes using IaC and this value is used to determine the name of a number of resources.
 
@@ -58,7 +62,7 @@ Automation Account: auto-xwc-core-001
 etc...
 ```
 
-### 5. Environments
+### 6. Environments
 
 Which environments the resources will be created in, selected from the following:
 
@@ -71,7 +75,7 @@ Which environments the resources will be created in, selected from the following
 We require a minimum of `Development` and `Production`, but NLE/Pre-Production can be added if required.
 
 
-### 6. Tags
+### 7. Tags
 
 Tags are our primary means of identifying the owner and purpose of each resource, as well as feeding in to our cost management and billing logic. At a minimum we require tags for the following: 
 
@@ -83,7 +87,7 @@ Tags are our primary means of identifying the owner and purpose of each resource
 
 
 
-### 7. Network Requirements
+### 8. Network Requirements
 
 Details on the size of the address space you require for the core VNET in the Spoke (We will allocate a specific address space based on your requirements). Also any additional architectural requirement for particular subnetting etc...
 
@@ -100,7 +104,7 @@ Details on the size of the address space you require for the core VNET in the Sp
 
 
 
-### 8. Tooling setup details (Optional!)
+### 9. Tooling setup details (Optional!)
 
 Details relating to the provisioning of some build/deployment tooling. Please see [this page](/documentation/our_offer/tooling/index.html#alz-tooling) for full details. 
 
@@ -121,7 +125,7 @@ Visibility: Internal
 Github Team: cloud-alz-admins  
 
 
-### 9. Extras
+### 10. Extras
 
 Anything additional not captured in the above. This is open ended and can include things like:
 
