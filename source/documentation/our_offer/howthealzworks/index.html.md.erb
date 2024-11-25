@@ -1,6 +1,6 @@
 ---
 title: How the ALZ works
-last_reviewed_on: 2024-11-22
+last_reviewed_on: 2024-11-25
 review_in: 6 months
 weight: 1100
 ---
@@ -22,6 +22,7 @@ A spoke will always contain one workload (plus associated subscription) and netw
 
 ####Networking 
 All workloads within a Spoke are connected to a service managed by the Azure Landing Zone team called ‘The Hub’. This connection is mandatory and enables: 
+
 1. Ensure spokes are using allowed and secure connections to the internet and identity management services 
 2. A route for communication between components running elsewhere in ALZ or in some circumstances the wider MOJ 
 3. Allows access to some ALZ services such as secure Bastion for server access 
@@ -68,7 +69,7 @@ The team managing the spoke has near total autonomy over what they use the spoke
 
 **With great autonomy comes great responsibility.**
 
-Spend, cost optimisation and general best practice are on the team to manage and maintain. The ALZ team can provide guidance and access to tolls to help manage and maintain best practice but, ultimately, the spoke owner has the authority to follow or not follow that guidance.
+Spend, cost optimisation and general best practice are on the team to manage and maintain. The ALZ team can provide guidance and access to tools to help manage and maintain best practice but, ultimately, the spoke owner has the authority to follow or not follow that guidance.
 It is not possible to get around the global policies controlling the security and integrity of the overall ALZ product from within a spoke. Any exceptions that need to be made must be authorised and documented in collaboration with the ALZ team. 
 
 You can use as many or as few of the standard feature offers the ALZ team provides to spokes once you start building resources. [Further information on how to opt in to using them and their capabilities is available.](/documentation/diy/index.html)
